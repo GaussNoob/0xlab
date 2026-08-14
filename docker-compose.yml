@@ -1,0 +1,70 @@
+name: 0xlab
+
+services:
+  sandbox-image:
+    image: 0xlab-sandbox:local
+    build:
+      context: ./infra/sandbox
+    command: ["/bin/true"]
+
+  runner:
+    build:
+      context: .
+      dockerfile: apps/runner/Dockerfile
+    environment:
+      PORT: 8787
+      RUNNER_API_TOKEN: ${RUNNER_API_TOKEN:-local-development-token}
+      SANDBOX_IMAGE: 0xlab-sandbox:local
+      MAX_CONCURRENT_JOBS: 2
+      JOB_TIMEOUT_MS: 15000
+      SANDBOX_JOBS_ROOT: /jobs
+      SANDBOX_JOBS_VOLUME: 0xlab-jobs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - 0xlab-jobs:/jobs
+    depends_on:
+      sandbox-image:
+        condition: service_completed_successfully
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      HOSTNAME: 0.0.0.0
+      RUNNER_URL: http://runner:8787
+      RUNNER_API_TOKEN: ${RUNNER_API_TOKEN:-local-development-token}
+      DATABASE_PATH: /app/data/0xlab.db
+    ports:
+      - "3000:3000"
+    volumes:
+      - 0xlab-data:/app/data
+    depends_on:
+      runner:
+        condition: service_healthy
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  0xlab-data:
+  0xlab-jobs:
+    name: 0xlab-jobs

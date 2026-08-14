@@ -1,0 +1,31 @@
+{
+  "name": "0xlab",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,runner -c cyan,green \"npm:dev:web\" \"npm:dev:runner\"",
+    "dev:web": "npm run dev --workspace @0xlab/web",
+    "dev:runner": "npm run dev --workspace @0xlab/runner",
+    "build": "npm run build --workspace @0xlab/contracts && npm run build --workspace @0xlab/runner && npm run build --workspace @0xlab/web",
+    "pretest": "npm run build --workspace @0xlab/contracts",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace @0xlab/web",
+    "test:sandbox": "node scripts/sandbox-smoke.mjs",
+    "pretypecheck": "npm run build --workspace @0xlab/contracts",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "sandbox:build": "docker build -t 0xlab-sandbox:local -f infra/sandbox/Dockerfile infra/sandbox",
+    "compose:up": "docker compose up --build",
+    "compose:down": "docker compose down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}

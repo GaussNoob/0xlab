@@ -1,0 +1,58 @@
+.eyebrow {
+  display: block;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: calc(13px + var(--font-boost, 0px));
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.button-primary,
+.button-secondary {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: calc(11px + var(--font-boost, 0px));
+  font-weight: 650;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.button-primary {
+  background: var(--accent);
+  color: #06100d;
+}
+
+.button-primary:hover {
+  background: #8bf0ce;
+}
+
+.button-primary:disabled {
+  background: #28463e;
+  color: #66817a;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  border-color: var(--line);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.button-secondary:hover {
+  border-color: var(--line-strong);
+  color: var(--text-primary);
+}
+
+.empty-inline {
+  padding: 28px 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
