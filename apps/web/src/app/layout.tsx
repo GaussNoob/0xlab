@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     default: "0xLAB — Systems Learning Environment",
     template: "%s · 0xLAB"
   },
-  description: "Laboratório interativo de C, C++, Assembly, Windows/Linux, memória, redes, gráficos e sistemas.",
+  description: "Laboratório interativo de C, C++, Assembly, Windows/Linux, memória, redes, gráficos, engenharia reversa e security research em sandbox.",
   applicationName: "0xLAB",
   robots: { index: false, follow: false }
 };

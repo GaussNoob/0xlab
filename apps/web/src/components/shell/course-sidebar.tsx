@@ -27,7 +27,11 @@ export function CourseSidebar() {
         : pathname.startsWith("/labs/memory")
           ? "memory"
           : pathname.startsWith("/labs/network")
-            ? "networking"
+          ? "networking"
+          : pathname.startsWith("/labs/security")
+            ? "security-research"
+            : pathname.startsWith("/labs/game-security")
+              ? "game-security"
             : pathname.split("/")[2] || "c";
   const selectedTrack = getCurriculumTrack(trackId) ?? getCurriculumTrack("c")!;
   const isLegacyCPath = pathname === "/learn/c/pointers";
@@ -149,7 +153,7 @@ export function CourseSidebar() {
         {!isLegacyCPath ? (
           <div className="sidebar-track-switcher">
             <span>OUTRAS TRILHAS</span>
-            {curriculumTracks.filter((track) => track.id !== selectedTrack.id).slice(0, 6).map((track) => (
+            {curriculumTracks.filter((track) => track.id !== selectedTrack.id).slice(0, 8).map((track) => (
               <Link href={track.href} key={track.id}>{track.shortTitle}<ChevronRight size={10} /></Link>
             ))}
           </div>

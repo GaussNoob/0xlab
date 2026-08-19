@@ -141,6 +141,7 @@
 .learning-chain[data-tone="cyan"] { --chain-color: var(--cyan); }
 .learning-chain[data-tone="violet"] { --chain-color: var(--violet); }
 .learning-chain[data-tone="amber"] { --chain-color: var(--amber); }
+.learning-chain[data-tone="rose"] { --chain-color: #f28aa8; }
 .learning-chain > span { color: var(--chain-color); font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); letter-spacing: .07em; text-transform: uppercase; }
 .learning-chain > div { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 16px; }
 .learning-chain > div span { display: flex; align-items: center; gap: 6px; color: var(--text-tertiary); }
@@ -179,6 +180,7 @@
 .advanced-track-cards article[data-tone="amber"] { --card-color: var(--amber); }
 .advanced-track-cards article[data-tone="blue"] { --card-color: #72a7ff; }
 .advanced-track-cards article[data-tone="violet"] { --card-color: var(--violet); }
+.advanced-track-cards article[data-tone="rose"] { --card-color: #f28aa8; }
 .advanced-track-cards header { display: flex; align-items: center; gap: 8px; color: var(--card-color); }
 .advanced-track-cards header span { font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); letter-spacing: .06em; text-transform: uppercase; }
 .advanced-track-cards h2 { margin: 27px 0 9px; font-size: calc(26px + var(--font-boost, 0px)); font-weight: 480; letter-spacing: -.03em; }
@@ -389,6 +391,7 @@
 .lab-index-card[data-tone="blue"] { --lab-color: #72a7ff; }
 .lab-index-card[data-tone="violet"] { --lab-color: var(--violet); }
 .lab-index-card[data-tone="green"] { --lab-color: var(--green); }
+.lab-index-card[data-tone="rose"] { --lab-color: #f28aa8; }
 .lab-index-card:hover { border-color: color-mix(in srgb, var(--lab-color) 50%, var(--line)); transform: translateY(-1px); }
 .lab-index-card > header { display: grid; grid-template-columns: 25px 1fr auto; align-items: center; color: var(--lab-color); }
 .lab-index-card > header span { color: var(--text-disabled); font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); }

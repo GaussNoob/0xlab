@@ -13,19 +13,14 @@ import {
   CircleDot,
   Clock3,
   Code2,
-  Cpu,
   Globe2,
   Layers3,
   ListTree,
   Network,
   Pause,
   Play,
-  Radio,
   RefreshCw,
   RotateCcw,
-  Router,
-  Send,
-  Server,
   Settings2,
   ShieldCheck,
   TerminalSquare,
@@ -36,7 +31,6 @@ import {
   buildNetworkTrace,
   formatPacketHex,
   NETWORK_PRESETS,
-  type NetworkActor,
   type NetworkConfig,
   type NetworkPresetId,
   type NetworkTrace,
@@ -44,19 +38,10 @@ import {
   type PacketLayer,
   type SimulatedPacket
 } from "./network-simulator";
+import { NetworkTopologyScene } from "./network-topology-scene";
 
 type NetworkView = "topology" | "encapsulation" | "flow" | "sockets";
 type SocketApi = "posix" | "winsock";
-
-const ACTORS: readonly { readonly id: NetworkActor; readonly label: string; readonly detail: string; readonly icon: typeof Cpu }[] = [
-  { id: "client-app", label: "App", detail: "client", icon: Code2 },
-  { id: "client-kernel", label: "Kernel", detail: "client", icon: Cpu },
-  { id: "client-nic", label: "NIC", detail: "client", icon: Radio },
-  { id: "router", label: "Router", detail: "L3", icon: Router },
-  { id: "server-nic", label: "NIC", detail: "server", icon: Radio },
-  { id: "server-kernel", label: "Kernel", detail: "server", icon: Cpu },
-  { id: "server-app", label: "App", detail: "server", icon: Server }
-] as const;
 
 const VIEW_TABS: readonly { readonly id: NetworkView; readonly label: string; readonly icon: typeof Network }[] = [
   { id: "topology", label: "Topology", icon: Network },
@@ -159,7 +144,7 @@ export function NetworkVisualizer() {
       </header>
 
       <nav className="network-view-tabs" aria-label="Ferramentas do Network Lab">
-        {VIEW_TABS.map(({ id, label, icon: Icon }) => <button type="button" key={id} data-active={view === id} onClick={() => setView(id)}><Icon size={13} /><span>{label}</span></button>)}
+        {VIEW_TABS.map(({ id, label, icon: Icon }) => <button type="button" key={id} data-active={view === id} aria-pressed={view === id} onClick={() => setView(id)}><Icon size={13} /><span>{label}</span></button>)}
         <span className="network-tabs-spacer" />
         <div className="network-live-summary"><i data-protocol={trace.protocol}>{trace.protocol}</i><span>{trace.packetCount} packets</span><span>{trace.wireBytes} modeled bytes</span><span>MTU {config.mtu}</span></div>
       </nav>
@@ -168,7 +153,7 @@ export function NetworkVisualizer() {
         <ScenarioBuilder config={config} trace={trace} onChoosePreset={choosePreset} onUpdate={updateConfig} />
 
         <main className="network-stage">
-          {view === "topology" ? <TopologyView event={event} trace={trace} config={config} /> : null}
+          {view === "topology" ? <TopologyView event={event} trace={trace} config={config} playing={playing} /> : null}
           {view === "encapsulation" ? <EncapsulationView packet={event.packet} selectedLayerId={selectedLayerId} onSelectLayer={setSelectedLayerId} /> : null}
           {view === "flow" ? <FlowView trace={trace} currentIndex={safeStepIndex} onSelect={setStepIndex} /> : null}
           {view === "sockets" ? <SocketView trace={trace} config={config} event={event} api={socketApi} onApiChange={setSocketApi} /> : null}
@@ -227,22 +212,35 @@ function ScenarioBuilder({ config, trace, onChoosePreset, onUpdate }: ScenarioBu
   );
 }
 
-function TopologyView({ event, trace, config }: { readonly event: NetworkTraceEvent; readonly trace: NetworkTrace; readonly config: NetworkConfig }) {
+function TopologyView({ event, trace, config, playing }: { readonly event: NetworkTraceEvent; readonly trace: NetworkTrace; readonly config: NetworkConfig; readonly playing: boolean }) {
+  const clientActive = event.actor.startsWith("client");
+  const serverActive = event.actor.startsWith("server");
   return (
-    <div className="network-topology-view" aria-label="Topologia interativa da rede">
+    <div className="network-topology-view">
       <header className="network-stage-header"><div><Network size={12} /><strong>LOGICAL PACKET PATH</strong></div><span>RFC 5737 documentation addresses · simulated route</span></header>
-      <div className="network-endpoint-state client"><span>CLIENT SOCKET</span><strong>{event.clientState}</strong><code>{config.clientIp}{trace.protocol === "ICMP" ? "" : `:${config.clientPort}`}</code></div>
-      <div className="network-endpoint-state server"><span>SERVER SOCKET</span><strong>{event.serverState}</strong><code>{config.serverIp}{trace.protocol === "ICMP" ? "" : `:${config.serverPort}`}</code></div>
-      <div className="network-path">
-        {ACTORS.map(({ id, label, detail, icon: Icon }, index) => <div className="network-path-part" key={id}>{index ? <div className="network-path-link"><ArrowRight size={12} /></div> : null}<article data-active={event.actor === id} title={`${detail} ${label}`}><span><Icon size={15} /></span><strong>{label}</strong><small>{detail}</small></article></div>)}
-        {event.packet ? <div key={event.id} className="network-moving-packet" data-direction={event.packet.direction}><Send size={11} /><strong>{event.packet.label}</strong><small>{event.packet.totalBytes} B</small></div> : null}
+      <NetworkTopologyScene event={event} trace={trace} playing={playing} />
+      <div className="network-topology-hud">
+        <section className="network-endpoint-state client" data-active={clientActive}>
+          <header><span><i />CLIENT SOCKET</span><strong>{event.clientState}</strong></header>
+          <code>{config.clientIp}{trace.protocol === "ICMP" ? "" : `:${config.clientPort}`}</code>
+          <footer><small>{clientActive ? "ACTIVE ENDPOINT" : "LOCAL ENDPOINT"}</small><span>CLIENT → ROUTE</span></footer>
+        </section>
+        <section className="network-endpoint-state server" data-active={serverActive}>
+          <header><span><i />SERVER SOCKET</span><strong>{event.serverState}</strong></header>
+          <code>{config.serverIp}{trace.protocol === "ICMP" ? "" : `:${config.serverPort}`}</code>
+          <footer><small>{serverActive ? "ACTIVE ENDPOINT" : "REMOTE ENDPOINT"}</small><span>ROUTE → SERVER</span></footer>
+        </section>
+        <section className="network-route-facts">
+          <header><span><Globe2 size={11} />IPv4 logical route</span><strong>{trace.protocol}</strong></header>
+          <code>{config.clientIp} → 192.0.2.1 → 198.51.100.1 → {config.serverIp}</code>
+          <footer><span><Boxes size={11} />MTU {config.mtu} B</span><span>4 modeled hops</span><span>no interfaces</span></footer>
+        </section>
+        <section className="network-current-event" data-packet={Boolean(event.packet)}>
+          <header><span>STEP {String(event.index + 1).padStart(2, "0")}</span><small>{event.phase}</small>{event.packet ? <strong>{event.packet.direction} · {event.packet.totalBytes} B</strong> : <strong>STATE TRANSITION</strong>}</header>
+          <div><h2>{event.title}</h2><p>{event.detail}</p></div>
+          <dl><div><dt>Application call</dt><dd>{event.socketCall}</dd></div><div><dt>Kernel action</dt><dd>{event.kernelAction}</dd></div></dl>
+        </section>
       </div>
-      <div className="network-route-facts"><span><Globe2 size={11} />IPv4 route</span><code>{config.clientIp} → 192.0.2.1 → 198.51.100.1 → {config.serverIp}</code><span><Boxes size={11} />MTU {config.mtu} · no real interfaces</span></div>
-      <section className="network-current-event" data-packet={Boolean(event.packet)}>
-        <span>{String(event.index + 1).padStart(2, "0")}</span>
-        <div><small>{event.phase}</small><h2>{event.title}</h2><p>{event.detail}</p></div>
-        <dl><div><dt>Application</dt><dd>{event.socketCall}</dd></div><div><dt>Kernel</dt><dd>{event.kernelAction}</dd></div></dl>
-      </section>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export interface CodeLineExplanation {
   readonly effect?: string;
 }
 
-export type CodeDestination = "playground" | "low-level" | "compiler" | "memory" | "network" | "windows" | "graphics";
+export type CodeDestination = "playground" | "low-level" | "compiler" | "memory" | "network" | "windows" | "graphics" | "security" | "game-security";
 
 interface CodeBlockProps {
   readonly code: string;
@@ -45,7 +45,9 @@ const destinationByKind: Readonly<Record<CodeDestination, string>> = {
   memory: "/labs/memory?source=lesson",
   network: "/labs/network?source=lesson",
   windows: "/labs/windows?source=lesson",
-  graphics: "/labs/graphics?source=lesson"
+  graphics: "/labs/graphics?source=lesson",
+  security: "/labs/security?source=lesson",
+  "game-security": "/labs/game-security?source=lesson"
 };
 
 export function CodeBlock({

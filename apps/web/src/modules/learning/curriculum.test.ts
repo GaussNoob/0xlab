@@ -13,7 +13,7 @@ import { getTopicDepth } from "./topic-depth";
 describe("connected computer engineering curriculum", () => {
   it("keeps all core domains in one navigable map", () => {
     expect(curriculumTracks.map((track) => track.id)).toEqual([
-      "c", "cpp", "assembly", "systems", "windows", "linux", "memory", "networking", "graphics", "reverse-engineering", "cybersecurity"
+      "c", "cpp", "assembly", "systems", "windows", "linux", "memory", "networking", "graphics", "reverse-engineering", "cybersecurity", "security-research", "game-security"
     ]);
     expect(curriculumTracks.every((track) => track.modules.every((module) => module.bridge.length > 0))).toBe(true);
   });
@@ -35,6 +35,28 @@ describe("connected computer engineering curriculum", () => {
     ]);
   });
 
+  it("covers the game security laboratory from memory to fictional anti-cheat", () => {
+    const games = getCurriculumTrack("game-security");
+    expect(games?.modules.map((module) => module.id)).toEqual([
+      "gsec-fundamentals", "gsec-memory", "gsec-pointers", "gsec-world", "gsec-aim",
+      "gsec-input", "gsec-tools", "gsec-assembly", "gsec-reverse", "gsec-anticheat", "gsec-network"
+    ]);
+    expect(games?.modules.flatMap((module) => module.topics)).toEqual(expect.arrayContaining([
+      "game state", "pointer chains", "world-to-screen", "fictional AC", "authoritative server"
+    ]));
+  });
+
+  it("covers the security research laboratory from memory bugs to detection", () => {
+    const security = getCurriculumTrack("security-research");
+    expect(security?.modules.map((module) => module.id)).toEqual([
+      "sres-fundamentals", "sres-corruption", "sres-mitigations", "sres-fuzzing", "sres-binary",
+      "sres-windows", "sres-linux", "sres-network", "sres-reverse", "sres-malware", "sres-detection"
+    ]);
+    expect(security?.modules.flatMap((module) => module.topics)).toEqual(expect.arrayContaining([
+      "stack overflow", "sanitizers", "coverage-guided", "process injection theory", "YARA", "Mini EDR"
+    ]));
+  });
+
   it("covers the graphics pipeline and modern API families", () => {
     const graphics = getCurriculumTrack("graphics");
     expect(graphics?.modules.map((module) => module.id)).toEqual([
@@ -45,7 +67,9 @@ describe("connected computer engineering curriculum", () => {
   it("offers capstones across binaries, Windows, Assembly and graphics", () => {
     const ids = projects.map((project) => project.id);
     expect(ids).toEqual(expect.arrayContaining([
-      "pe-parser", "elf-inspector", "assembly-cpp-bridge", "opcode-vm", "cpu-emulator", "educational-debugger", "process-explorer", "runtime-dll", "opengl-renderer", "d3d11-renderer", "d3d12-renderer", "vulkan-renderer", "minimal-engine"
+      "pe-parser", "elf-inspector", "assembly-cpp-bridge", "opcode-vm", "cpu-emulator", "educational-debugger", "process-explorer", "runtime-dll", "opengl-renderer", "d3d11-renderer", "d3d12-renderer", "vulkan-renderer", "minimal-engine",
+      "sres-vulnerable-cli", "sres-fuzz-parser", "sres-crackme", "sres-synthetic-sample", "sres-mini-edr", "sres-vulnerable-server", "sres-secure-server", "sres-malware-analyzer",
+      "gsec-memory-inspector", "gsec-entity-visualizer", "gsec-mini-anticheat", "gsec-security-analyzer", "gsec-local-lab"
     ]));
   });
 
@@ -92,10 +116,10 @@ describe("connected computer engineering curriculum", () => {
   });
 
   it("publishes substantive content for every module and topic", () => {
-    expect(curriculumModules).toHaveLength(65);
-    expect(curriculumLessons).toHaveLength(293);
+    expect(curriculumModules).toHaveLength(87);
+    expect(curriculumLessons).toHaveLength(403);
     expect(learningStats.totalLessons).toBe(curriculumLessons.length);
-    expect(Object.keys(lessonGuides)).toHaveLength(65);
+    expect(Object.keys(lessonGuides)).toHaveLength(87);
 
     for (const { module } of curriculumModules) {
       const guide = lessonGuides[module.id];

@@ -106,51 +106,94 @@
 .network-warnings p { display: flex; align-items: flex-start; gap: 5px; margin: 3px 0; color: var(--amber); font-size: calc(11px + var(--font-boost, 0px)); line-height: 1.4; }
 .network-warnings svg { flex: 0 0 auto; margin-top: 4px; }
 
-.network-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #090d11; }
+.network-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; container-type: inline-size; background: #090d11; }
 .network-stage-header { display: flex; position: absolute; z-index: 10; top: 0; right: 0; left: 0; height: 33px; align-items: center; justify-content: space-between; padding: 0 9px; border-bottom: 1px solid rgba(37,46,57,.88); background: rgba(12,17,22,.94); backdrop-filter: blur(7px); }
 .network-stage-header > div { display: flex; align-items: center; gap: 6px; color: #778590; font-family: var(--font-mono); }
 .network-stage-header strong { font-size: calc(11px + var(--font-boost, 0px)); letter-spacing: .06em; }
 .network-stage-header > span { color: #4f5d67; font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); }
 
 /* Topology */
-.network-topology-view { position: absolute; inset: 0; overflow: hidden; background-image: linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),radial-gradient(circle at 50% 42%,rgba(103,199,243,.055),transparent 55%); background-size: 24px 24px,24px 24px,100% 100%; }
-.network-endpoint-state { position: absolute; z-index: 2; top: 49px; display: grid; min-width: 180px; grid-template-columns: 1fr auto; gap: 3px 10px; padding: 8px 10px; border: 1px solid #293640; background: rgba(12,17,22,.92); }
-.network-endpoint-state.client { left: 18px; }
-.network-endpoint-state.server { right: 18px; }
-.network-endpoint-state span { color: #52616c; font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); }
-.network-endpoint-state strong { color: var(--amber); font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); text-align: right; }
-.network-endpoint-state code { grid-column: 1 / -1; color: #a4b0b9; font-size: calc(12px + var(--font-boost, 0px)); }
-.network-endpoint-state.server strong { color: var(--accent); }
+.network-topology-view { position: absolute; inset: 0; overflow: hidden; background: #080c10; }
+.network-topology-scene { position: absolute; z-index: 1; inset: 33px 0 0; min-width: 0; min-height: 0; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 36%,#12202a 0,#0a0f14 48%,#070a0e 100%); }
+.network-topology-scene::before,
+.network-topology-scene::after { position: absolute; z-index: 2; inset: 0; pointer-events: none; content: ""; }
+.network-topology-scene::before { background: linear-gradient(rgba(103,199,243,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(103,199,243,.025) 1px,transparent 1px); background-size: 32px 32px; mask-image: linear-gradient(to bottom,rgba(0,0,0,.7),transparent 78%); }
+.network-topology-scene::after { background: linear-gradient(90deg,rgba(5,8,11,.72),transparent 16%,transparent 84%,rgba(5,8,11,.72)),linear-gradient(180deg,rgba(5,8,11,.48),transparent 18%,transparent 72%,rgba(5,8,11,.82)),radial-gradient(ellipse at center,transparent 42%,rgba(4,7,10,.34) 78%,rgba(4,7,10,.82) 100%); }
+.network-topology-scene canvas { position: absolute; z-index: 1; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; outline: 0; }
+.network-topology-scene canvas:focus-visible { outline: 1px solid var(--cyan); outline-offset: -2px; }
 
-.network-path { position: absolute; z-index: 3; top: 150px; right: 18px; left: 18px; display: flex; align-items: center; justify-content: center; }
-.network-path-part { display: contents; }
-.network-path article { position: relative; display: flex; width: auto; min-width: 0; height: 82px; flex: 1 1 0; align-items: center; flex-direction: column; justify-content: center; gap: 3px; border: 1px solid #2b3842; background: rgba(14,20,25,.96); transition: border-color 180ms,box-shadow 180ms,transform 180ms; }
-.network-path article > span { display: grid; width: 26px; height: 26px; place-items: center; border: 1px solid #283640; color: #64747f; }
-.network-path article strong { overflow: hidden; width: 100%; padding: 0 2px; color: #9ca9b2; font-size: calc(11px + var(--font-boost, 0px)); font-weight: 550; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
-.network-path article small { color: #4e5b65; font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); text-align: center; }
-.network-path article[data-active="true"] { z-index: 2; border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 0 26px rgba(113,230,193,.13),inset 0 0 18px rgba(113,230,193,.06); }
-.network-path article[data-active="true"] > span { border-color: rgba(113,230,193,.45); color: var(--accent); }
-.network-path-link { display: grid; width: clamp(12px,2.2vw,30px); place-items: center; color: #34434e; }
-.network-moving-packet { position: absolute; z-index: 5; top: -38px; display: flex; min-width: 85px; height: 29px; align-items: center; justify-content: center; gap: 4px; padding: 0 7px; border: 1px solid rgba(113,230,193,.56); background: #10221d; color: var(--accent); font-family: var(--font-mono); box-shadow: 0 0 22px rgba(113,230,193,.18); animation: network-packet-out 800ms cubic-bezier(.2,.7,.2,1) both; }
-.network-moving-packet[data-direction="inbound"] { animation-name: network-packet-in; }
-.network-moving-packet strong { font-size: calc(11px + var(--font-boost, 0px)); white-space: nowrap; }
-.network-moving-packet small { color: #75a797; font-size: calc(11px + var(--font-boost, 0px)); white-space: nowrap; }
-@keyframes network-packet-out { from { left: 8%; opacity: .2; } to { left: calc(78% - 42px); opacity: 1; } }
-@keyframes network-packet-in { from { left: calc(78% - 42px); opacity: .2; } to { left: 8%; opacity: 1; } }
+.network-scene-status { position: absolute; z-index: 3; top: 14px; left: 50%; display: grid; min-width: 214px; grid-template-columns: auto 1fr; align-items: center; gap: 1px 7px; transform: translateX(-50%); padding: 7px 10px; border: 1px solid rgba(103,199,243,.24); background: rgba(7,12,16,.78); box-shadow: 0 12px 34px rgba(0,0,0,.24); backdrop-filter: blur(9px); color: #80909a; font-family: var(--font-mono); pointer-events: none; }
+.network-scene-status i { width: 7px; height: 7px; grid-row: 1 / 3; border-radius: 50%; background: #5c6b75; box-shadow: 0 0 0 3px rgba(92,107,117,.1); }
+.network-scene-status[data-playing="true"] i { background: var(--accent); box-shadow: 0 0 12px rgba(113,230,193,.62); }
+.network-scene-status span { color: #a4b2bb; font-size: calc(10px + var(--font-boost, 0px)); font-weight: 700; letter-spacing: .08em; }
+.network-scene-status small { overflow: hidden; max-width: 290px; color: #61717c; font-size: calc(9px + var(--font-boost, 0px)); text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.network-scene-help { position: absolute; z-index: 3; top: calc(50% + 80px); left: 50%; transform: translateX(-50%); padding: 5px 9px; border: 1px solid rgba(62,81,93,.36); background: rgba(6,10,14,.64); color: #596a75; font-family: var(--font-mono); font-size: calc(9px + var(--font-boost, 0px)); letter-spacing: .045em; pointer-events: none; white-space: nowrap; }
+.network-scene-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; margin: -1px; padding: 0; border: 0; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
-.network-route-facts { position: absolute; z-index: 2; top: 255px; right: 18px; left: 18px; display: flex; min-height: 31px; align-items: center; justify-content: center; gap: 8px; padding: 0 8px; border-top: 1px solid #1e2931; border-bottom: 1px solid #1e2931; background: rgba(9,13,17,.78); color: #53626d; font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); }
-.network-route-facts span { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-.network-route-facts code { overflow: hidden; color: #83919b; text-overflow: ellipsis; white-space: nowrap; }
-.network-current-event { position: absolute; right: 18px; bottom: 20px; left: 18px; display: grid; min-height: 126px; grid-template-columns: 32px minmax(0,.8fr) minmax(0,1.2fr); gap: 10px; padding: 13px; border: 1px solid #293640; border-top: 2px solid #3d5360; background: rgba(10,15,20,.94); box-shadow: 0 14px 36px rgba(0,0,0,.25); }
-.network-current-event[data-packet="true"] { border-top-color: var(--accent); }
-.network-current-event > span { color: var(--cyan); font-family: var(--font-mono); font-size: calc(16px + var(--font-boost, 0px)); }
-.network-current-event small { color: var(--accent); font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); letter-spacing: .06em; }
-.network-current-event h2 { margin: 2px 0 4px; color: #d8dfe4; font-size: calc(15px + var(--font-boost, 0px)); font-weight: 570; }
-.network-current-event p { margin: 0; color: #778590; font-size: calc(12px + var(--font-boost, 0px)); line-height: 1.45; }
-.network-current-event dl { display: flex; min-width: 0; flex-direction: column; gap: 5px; margin: 0; }
-.network-current-event dl > div { min-width: 0; padding: 5px 7px; border-left: 1px solid #33424d; background: #0d1318; }
-.network-current-event dt { color: #53616c; font-size: calc(11px + var(--font-boost, 0px)); }
-.network-current-event dd { overflow: hidden; margin: 1px 0 0; color: #a4b0b9; font-family: var(--font-mono); font-size: calc(11px + var(--font-boost, 0px)); text-overflow: ellipsis; white-space: nowrap; }
+.network-topology-hud { position: absolute; z-index: 4; inset: 45px 14px 14px; display: grid; min-width: 0; min-height: 0; grid-template-columns: minmax(190px,.85fr) minmax(120px,1.3fr) minmax(210px,.95fr); grid-template-rows: auto minmax(80px,1fr) auto; gap: 10px; pointer-events: none; }
+.network-endpoint-state,
+.network-route-facts,
+.network-current-event { min-width: 0; border: 1px solid rgba(54,72,84,.82); background: linear-gradient(135deg,rgba(16,24,30,.94),rgba(8,13,18,.88)); box-shadow: 0 16px 42px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.025); backdrop-filter: blur(10px); }
+.network-endpoint-state { align-self: start; padding: 9px 10px 8px; }
+.network-endpoint-state.client { grid-column: 1; grid-row: 1; border-left: 2px solid rgba(233,185,110,.68); }
+.network-endpoint-state.server { grid-column: 3; grid-row: 1; border-right: 2px solid rgba(113,230,193,.68); }
+.network-endpoint-state[data-active="true"] { border-color: rgba(103,199,243,.72); box-shadow: 0 0 30px rgba(103,199,243,.1),inset 0 1px rgba(255,255,255,.035); }
+.network-endpoint-state > header,
+.network-endpoint-state > footer,
+.network-route-facts > header,
+.network-route-facts > footer { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 7px; font-family: var(--font-mono); }
+.network-endpoint-state > header span { display: flex; align-items: center; gap: 6px; color: #667783; font-size: calc(10px + var(--font-boost, 0px)); letter-spacing: .055em; }
+.network-endpoint-state > header i { width: 5px; height: 5px; border-radius: 50%; background: #52636f; }
+.network-endpoint-state[data-active="true"] > header i { background: var(--cyan); box-shadow: 0 0 8px rgba(103,199,243,.7); }
+.network-endpoint-state > header strong { overflow: hidden; color: var(--amber); font-size: calc(10px + var(--font-boost, 0px)); text-overflow: ellipsis; white-space: nowrap; }
+.network-endpoint-state.server > header strong { color: var(--accent); }
+.network-endpoint-state > code { display: block; overflow: hidden; margin: 7px 0 6px; color: #c0cbd2; font-size: calc(12px + var(--font-boost, 0px)); text-overflow: ellipsis; white-space: nowrap; }
+.network-endpoint-state > footer { padding-top: 6px; border-top: 1px solid rgba(47,62,72,.54); color: #485761; font-size: calc(9px + var(--font-boost, 0px)); }
+.network-endpoint-state > footer small { color: #5f747e; font-size: inherit; }
+
+.network-route-facts { grid-column: 3; grid-row: 3; align-self: end; padding: 10px; font-family: var(--font-mono); }
+.network-route-facts > header span { display: flex; align-items: center; gap: 5px; color: #71828d; font-size: calc(10px + var(--font-boost, 0px)); text-transform: uppercase; }
+.network-route-facts > header strong { padding: 2px 5px; border: 1px solid rgba(103,199,243,.3); color: var(--cyan); font-size: calc(10px + var(--font-boost, 0px)); }
+.network-route-facts > code { display: block; overflow: hidden; margin: 8px 0; color: #9ba9b2; font-size: calc(10px + var(--font-boost, 0px)); line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
+.network-route-facts > footer { justify-content: flex-start; flex-wrap: wrap; color: #53636e; font-size: calc(9px + var(--font-boost, 0px)); }
+.network-route-facts > footer span { display: flex; align-items: center; gap: 4px; }
+.network-route-facts > footer span + span::before { margin-right: 3px; color: #34434d; content: "/"; }
+
+.network-current-event { grid-column: 1 / 3; grid-row: 3; align-self: end; display: grid; grid-template-columns: minmax(180px,.9fr) minmax(220px,1.1fr); gap: 9px 12px; padding: 11px 12px; border-top: 2px solid #3d5360; }
+.network-current-event[data-packet="true"] { border-top-color: var(--accent); box-shadow: 0 18px 48px rgba(0,0,0,.28),inset 0 1px rgba(113,230,193,.06); }
+.network-current-event > header { display: flex; min-width: 0; grid-column: 1 / -1; align-items: center; gap: 7px; font-family: var(--font-mono); }
+.network-current-event > header span { color: var(--cyan); font-size: calc(11px + var(--font-boost, 0px)); font-weight: 700; letter-spacing: .04em; }
+.network-current-event > header small { padding-left: 7px; border-left: 1px solid #34434d; color: var(--accent); font-size: calc(10px + var(--font-boost, 0px)); letter-spacing: .06em; }
+.network-current-event > header strong { overflow: hidden; margin-left: auto; color: #667883; font-size: calc(9px + var(--font-boost, 0px)); font-weight: 600; letter-spacing: .045em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.network-current-event h2 { margin: 0 0 4px; color: #d8dfe4; font-size: calc(15px + var(--font-boost, 0px)); font-weight: 570; }
+.network-current-event p { display: -webkit-box; overflow: hidden; margin: 0; color: #7b8993; font-size: calc(11px + var(--font-boost, 0px)); line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.network-current-event dl { display: grid; min-width: 0; grid-template-columns: 1fr; gap: 5px; margin: 0; }
+.network-current-event dl > div { min-width: 0; padding: 5px 7px; border-left: 1px solid #33424d; background: rgba(8,13,17,.68); }
+.network-current-event dt { color: #53616c; font-size: calc(10px + var(--font-boost, 0px)); }
+.network-current-event dd { overflow: hidden; margin: 1px 0 0; color: #a4b0b9; font-family: var(--font-mono); font-size: calc(10px + var(--font-boost, 0px)); text-overflow: ellipsis; white-space: nowrap; }
+
+@container (max-width: 620px) {
+  .network-topology-hud { inset: 44px 9px 9px; grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-rows: auto minmax(110px,1fr) auto auto; gap: 7px; }
+  .network-endpoint-state.client { grid-column: 1; }
+  .network-endpoint-state.server { grid-column: 2; }
+  .network-route-facts { grid-column: 1 / -1; grid-row: 3; padding: 8px 9px; }
+  .network-current-event { grid-column: 1 / -1; grid-row: 4; grid-template-columns: minmax(150px,.8fr) minmax(200px,1.2fr); padding: 9px 10px; }
+  .network-scene-status { top: 96px; }
+  .network-scene-help { top: calc(50% - 4px); }
+}
+
+@container (max-width: 520px) {
+  .network-stage-header > span { display: none; }
+  .network-endpoint-state { padding: 7px 8px; }
+  .network-endpoint-state > footer span { display: none; }
+  .network-route-facts > code { white-space: normal; }
+  .network-current-event { grid-template-columns: 1fr; }
+  .network-current-event > div,
+  .network-current-event > dl { grid-column: 1; }
+  .network-current-event dl { grid-template-columns: 1fr 1fr; }
+  .network-scene-status { top: 87px; max-width: calc(100% - 18px); }
+  .network-scene-help { top: 154px; max-width: calc(100% - 18px); overflow: hidden; text-overflow: ellipsis; }
+}
 
 /* Encapsulation */
 .network-encapsulation-view { position: absolute; inset: 0; overflow: auto; padding: 45px 15px 15px; background: radial-gradient(circle at 30% 45%,rgba(103,199,243,.06),transparent 38%),#090d11; }
@@ -295,25 +338,52 @@
 .network-step-count strong { color: #a8b4bc; font-size: calc(12px + var(--font-boost, 0px)); }
 .network-step-count small { grid-column: 1 / -1; color: #4d5a64; font-size: calc(11px + var(--font-boost, 0px)); text-align: right; }
 
-@media (max-width: 1280px) {
-  .network-workbench { grid-template-columns: 238px minmax(390px,1fr) 268px; }
+/* The shell sidebar reduces the workbench before the viewport itself is narrow.
+   Dock the inspector below early enough to preserve the 3D route as the focus. */
+@media (max-width: 1500px) {
+  .network-workbench { grid-template-columns: 238px minmax(0,1fr); grid-template-rows: minmax(340px,1fr) minmax(145px,.34fr); }
+  .network-scenario-panel { grid-column: 1; grid-row: 1 / 3; }
+  .network-stage { grid-column: 2; grid-row: 1; }
+  .network-packet-inspector { display: block; grid-column: 2; grid-row: 2; border-top: 1px solid var(--line); }
   .network-trace-meta span:first-child { display: none; }
   .network-live-summary span:nth-last-child(2) { display: none; }
-  .network-path article { min-width: 0; }
 }
 
 @media (max-width: 1080px) {
-  .network-workbench { grid-template-columns: 224px minmax(390px,1fr); }
-  .network-packet-inspector { display: none; }
+  .network-workbench { grid-template-columns: 224px minmax(0,1fr); }
+  .network-scenario-panel { grid-column: 1; grid-row: 1 / 3; }
+  .network-stage { grid-column: 2; grid-row: 1; }
+  .network-packet-inspector { display: block; grid-column: 2; grid-row: 2; border-top: 1px solid var(--line); }
   .network-trace-meta span:last-child { display: none; }
   .network-view-tabs > button { min-width: 92px; padding: 0 7px; }
-  .network-route-facts code { display: none; }
-  .network-path article small { display: none; }
 }
 
 @media (max-width: 820px) {
-  .network-lab-shell { min-width: 700px; }
+  .network-lab-shell { height: auto; min-width: 0; min-height: 100dvh; grid-template-rows: auto auto auto auto; overflow: visible; }
+  .network-lab-header { min-height: 48px; padding-top: 6px; padding-bottom: 6px; }
+  .network-view-tabs { min-height: 40px; overflow-x: auto; }
   .network-live-summary { display: none; }
-  .network-current-event { grid-template-columns: 28px 1fr; }
-  .network-current-event dl { display: none; }
+  .network-tabs-spacer { display: none; }
+  .network-workbench { display: grid; grid-template-columns: minmax(0,1fr); grid-template-rows: clamp(560px,76vh,720px) auto auto; overflow: visible; }
+  .network-stage { grid-column: 1; grid-row: 1; min-height: 560px; border-bottom: 1px solid var(--line); }
+  .network-scenario-panel { grid-column: 1; grid-row: 2; max-height: 520px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .network-packet-inspector { grid-column: 1; grid-row: 3; max-height: 520px; border-top: 0; border-left: 0; }
+  .network-controls { min-height: 72px; }
+}
+
+@media (max-width: 620px) {
+  .network-title strong { font-size: calc(12px + var(--font-boost, 0px)); }
+  .network-trace-meta { display: none; }
+  .network-view-tabs > button { min-width: 108px; }
+  .network-controls { grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto auto; gap: 7px; }
+  .network-transport { grid-column: 1; grid-row: 1; width: max-content; }
+  .network-step-count { grid-column: 2; grid-row: 1; }
+  .network-timeline { grid-column: 1 / -1; grid-row: 2; }
+  .network-flow-view { overflow: auto; }
+  .network-flow-head,
+  .network-flow-rows { min-width: 680px; }
+  .socket-workspace { overflow: auto; grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(280px,1fr) auto; }
+  .socket-code-panel { border-right: 0; border-bottom: 1px solid var(--line); }
+  .socket-boundary-panel { min-height: 330px; }
+  .network-layer-detail { min-width: 420px; }
 }

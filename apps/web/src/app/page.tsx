@@ -1,4 +1,4 @@
-import { ArrowRight, Braces, ChevronRight, Clock3, Container, Cpu, MemoryStick, Network, Play, ShieldCheck, TerminalSquare } from "lucide-react";
+import { ArrowRight, Braces, ChevronRight, Clock3, Container, Cpu, Gamepad2, MemoryStick, Network, Play, ShieldCheck, TerminalSquare } from "lucide-react";
 import Link from "next/link";
 import { PointerMiniDiagram } from "@/components/learning/pointer-mini-diagram";
 import { learningStats } from "@/modules/learning/catalog";
@@ -17,7 +17,8 @@ export default function HomePage() {
   const cLessons = lessonCount("c");
   const cppLessons = lessonCount("cpp");
   const networkLessons = lessonCount("networking");
-  const reverseLessons = lessonCount("reverse-engineering", "cybersecurity");
+  const reverseLessons = lessonCount("reverse-engineering", "cybersecurity", "security-research");
+  const gameLessons = lessonCount("game-security");
   return (
     <div className="workbench-home">
       <header className="workbench-heading">
@@ -48,7 +49,8 @@ export default function HomePage() {
           <Lane index="01" icon={Braces} title="C · source to machine" meta={`11 / ${cLessons} lessons`} progress={completion(11, cLessons)} tone="cyan" href="/learn/c" />
           <Lane index="02" icon={Cpu} title="Modern C++ · ownership" meta={`3 / ${cppLessons} lessons`} progress={completion(3, cppLessons)} tone="violet" href="/learn/cpp" />
           <Lane index="03" icon={Network} title="Networks · sockets & protocols" meta={`0 / ${networkLessons} lessons`} progress={0} tone="green" href="/learn/networking" />
-          <Lane index="04" icon={ShieldCheck} title="Reverse engineering & security" meta={`0 / ${reverseLessons} lessons`} progress={0} tone="amber" href="/learn/reverse-engineering" />
+          <Lane index="04" icon={ShieldCheck} title="Security research & malware lab" meta={`0 / ${reverseLessons} lessons`} progress={0} tone="amber" href="/learn/security-research" />
+          <Lane index="05" icon={Gamepad2} title="Game security & cheat research" meta={`0 / ${gameLessons} lessons`} progress={0} tone="violet" href="/learn/game-security" />
         </section>
 
         <aside className="runtime-panel">

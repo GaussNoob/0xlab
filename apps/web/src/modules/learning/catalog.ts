@@ -631,12 +631,129 @@ export const projects: readonly ProjectDefinition[] = [
     skills: ["SDL3", "renderer architecture", "profiling"],
     estimatedHours: 70,
     platform: "Cross-platform"
+  },
+  {
+    id: "sres-vulnerable-cli",
+    title: "Vulnerable CLI educacional",
+    level: "Intermediário",
+    description: "Construa um CLI próprio com bugs deliberados de bound e lifetime, reproduza cada falha com sanitizers no sandbox e publique a versão corrigida com testes de regressão.",
+    skills: ["C", "buffers", "sanitizers"],
+    estimatedHours: 14,
+    platform: "Linux"
+  },
+  {
+    id: "sres-fuzz-parser",
+    title: "Binary file parser para fuzzing",
+    level: "Avançado",
+    description: "Implemente um parser de formato simples com um defeito educacional, cubra-o com harness estilo libFuzzer, minimize crashes com ASan e feche cada achado com patch.",
+    skills: ["C++", "parsing", "fuzzing"],
+    estimatedHours: 18,
+    platform: "Linux"
+  },
+  {
+    id: "sres-crackme",
+    title: "Crackme collection da plataforma",
+    level: "Intermediário",
+    description: "Gere binários próprios com validação de senha educacional, localize comparação e branch no disassembly e só então confronte o source original.",
+    skills: ["C", "disassembly", "strings"],
+    estimatedHours: 12,
+    platform: "Cross-platform"
+  },
+  {
+    id: "sres-synthetic-sample",
+    title: "Synthetic malware sample",
+    level: "Avançado",
+    description: "Analise uma amostra sintética que lê config fictícia, fala com C2 local via ECHO e encerra; documente PE, imports, strings, timeline e detecção sem payload nocivo.",
+    skills: ["PE", "malware analysis", "telemetry"],
+    estimatedHours: 16,
+    platform: "Windows"
+  },
+  {
+    id: "sres-mini-edr",
+    title: "Mini EDR de laboratório",
+    level: "Avançado",
+    description: "Monitore apenas processos da sandbox, correlacione file/network/API e escreva regras que detectem o agente educacional sem classificar APIs honestas como maliciosas.",
+    skills: ["C++", "telemetry", "detection"],
+    estimatedHours: 20,
+    platform: "Linux"
+  },
+  {
+    id: "sres-vulnerable-server",
+    title: "Vulnerable TCP server",
+    level: "Avançado",
+    description: "Sirva um protocolo length-prefixed propositalmente frágil na rede isolada: length não validado, parsing incorreto e integer issues para review, fuzz, crash e correção.",
+    skills: ["C", "TCP", "parsing"],
+    estimatedHours: 16,
+    platform: "Linux"
+  },
+  {
+    id: "sres-secure-server",
+    title: "Secure TCP server",
+    level: "Avançado",
+    description: "Reconstrua o mesmo servidor com validação, limites, framing, timeouts, logging de rejeite e defaults seguros, comparando comportamento com a edição vulnerável.",
+    skills: ["C++", "TCP", "hardening"],
+    estimatedHours: 16,
+    platform: "Linux"
+  },
+  {
+    id: "sres-malware-analyzer",
+    title: "Malware analyzer de laboratório",
+    level: "Avançado",
+    description: "Escreva em C++ um analisador read-only de arquivos da plataforma: hash, PE, sections, imports, strings, entropy e flags de mitigação, sem executar a amostra.",
+    skills: ["C++", "PE", "binary"],
+    estimatedHours: 22,
+    platform: "Cross-platform"
+  },
+  {
+    id: "gsec-memory-inspector",
+    title: "GAME MEMORY INSPECTOR",
+    level: "Avançado",
+    description: "Ferramenta de pesquisa que inspeciona o processo do Arena Lab: ponteiros, offsets, dump e watchpoints — somente contra o binário educacional da plataforma.",
+    skills: ["C++", "Pointers", "Memory", "Windows API", "Debugger"],
+    estimatedHours: 18,
+    platform: "Windows"
+  },
+  {
+    id: "gsec-entity-visualizer",
+    title: "3D ENTITY VISUALIZER",
+    level: "Avançado",
+    description: "Visualize entidades, vetores, AABB e world-to-screen do lab game em C++ com preview Three.js, classificado como RESEARCH / DEBUG TOOL.",
+    skills: ["C++", "Three.js", "Vectors", "Matrices", "Game State"],
+    estimatedHours: 20,
+    platform: "Cross-platform"
+  },
+  {
+    id: "gsec-mini-anticheat",
+    title: "MINI ANTI-CHEAT",
+    level: "Avançado",
+    description: "Detector educacional para o próprio jogo: integridade, telemetria e comportamento impossível. O desafio é detectar alterações e reduzir falsos positivos, não esconder de um AC real.",
+    skills: ["C++", "Windows API", "Integrity", "Telemetry", "Detection"],
+    estimatedHours: 22,
+    platform: "Windows"
+  },
+  {
+    id: "gsec-security-analyzer",
+    title: "GAME SECURITY ANALYZER",
+    level: "Avançado",
+    description: "Analise o binário do lab game: funções, structs, strings e o caminho source → assembly → memory, depois compare com o source original.",
+    skills: ["C++", "Assembly", "Reverse Engineering", "Binary Analysis"],
+    estimatedHours: 24,
+    platform: "Cross-platform"
+  },
+  {
+    id: "gsec-local-lab",
+    title: "LOCAL GAME SECURITY LAB",
+    level: "Avançado",
+    description: "Monte o stack completo em loopback: jogo, client, server autoritativo, Mini Anti-Cheat e research tools, sem qualquer título online de terceiros.",
+    skills: ["C++", "Game", "Client", "Server", "Anti-Cheat", "Research Tools"],
+    estimatedHours: 28,
+    platform: "Windows"
   }
 ] as const;
 
 export const learningStats = {
   completedLessons: 11,
-  totalLessons: 293,
+  totalLessons: 403,
   completedExercises: 27,
   studyMinutes: 1_126,
   streakDays: 6,

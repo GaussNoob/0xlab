@@ -11,6 +11,8 @@ const contextByPath: Record<string, string> = {
   "/playground": "playground / main.c",
   "/labs/memory": "labs / memory-visualizer",
   "/labs/network": "labs / network-visualizer",
+  "/labs/security": "labs / security-lab",
+  "/labs/game-security": "labs / game-security",
   "/labs/low-level": "labs / low-level / untitled-experiment",
   "/projects": "projects / catalog",
   "/progress": "progress / overview"

@@ -129,6 +129,7 @@ function profileFor(project: ProjectDefinition): ProjectProfile {
   if (/opengl|direct3d|vulkan|renderer|gpu|shader|frame|game loop/.test(skills)) return profiles.graphics!;
   if (/allocator|memory pool|alignment|arena|free list/.test(skills)) return profiles.memory!;
   if (/thread|task queue|concurr|event system/.test(skills)) return profiles.concurrency!;
+  if (/fuzz|yara|edr|sanitizer|hardening|detection|malware analysis|anti-cheat|integrity/.test(skills)) return profiles.binary!;
   if (/parser|binary|serialization|opcode|disassembl|(?:^|\W)(?:elf|pe|hex)(?:$|\W)/.test(skills)) return profiles.binary!;
   if (/win32|process|debugger|shell|dll|filesystem|file explorer/.test(skills)) return profiles.systems!;
   if (project.id.startsWith("c-")) return { ...profiles.general!, starter: cStarter };

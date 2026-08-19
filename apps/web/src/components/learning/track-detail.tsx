@@ -8,9 +8,10 @@ import {
   Check,
   Cpu,
   FlaskConical,
+  Gamepad2,
   Layers3,
   Network,
-  ShieldCheck,
+  ShieldAlert,
   TerminalSquare
 } from "lucide-react";
 import Link from "next/link";
@@ -35,6 +36,18 @@ const connections: Readonly<Record<string, readonly { label: string; href: strin
     { label: "Windows", href: "/learn/windows", note: "window e presentation" },
     { label: "Memory", href: "/learn/memory", note: "buffers, alignment e VRAM" },
     { label: "Reverse Engineering", href: "/learn/reverse-engineering", note: "frames próprios e draw calls" }
+  ],
+  "security-research": [
+    { label: "C / Memory", href: "/learn/memory", note: "bounds, lifetime e layout" },
+    { label: "Assembly", href: "/learn/assembly", note: "frame, RSP/RBP e RIP" },
+    { label: "Reverse Engineering", href: "/learn/reverse-engineering", note: "binários próprios" },
+    { label: "Cybersecurity", href: "/learn/cybersecurity", note: "threat model e hardening" }
+  ],
+  "game-security": [
+    { label: "C / Memory", href: "/learn/memory", note: "structs, offsets e cadeias" },
+    { label: "Graphics", href: "/learn/graphics", note: "câmera, matrizes e W2S" },
+    { label: "Security Research", href: "/learn/security-research", note: "integridade e detecção" },
+    { label: "Networking", href: "/learn/networking", note: "servidor autoritativo" }
   ]
 };
 
@@ -43,7 +56,9 @@ const primaryLabByTrack: Readonly<Record<string, { label: string; href: string }
   windows: { label: "Abrir Windows Internals Lab", href: "/labs/windows" },
   graphics: { label: "Abrir Graphics Playground", href: "/labs/graphics" },
   memory: { label: "Abrir Memory Visualizer", href: "/labs/memory" },
-  networking: { label: "Abrir Network Visualizer", href: "/labs/network" }
+  networking: { label: "Abrir Network Visualizer", href: "/labs/network" },
+  "security-research": { label: "Abrir Security Lab", href: "/labs/security" },
+  "game-security": { label: "Abrir Game Security Lab", href: "/labs/game-security" }
 };
 
 function flowFor(track: CurriculumTrack): readonly string[] {
@@ -51,6 +66,8 @@ function flowFor(track: CurriculumTrack): readonly string[] {
   if (track.id === "windows") return ["Application", "Win32 API", "ntdll", "Native API", "Kernel", "Driver / Hardware"];
   if (track.id === "graphics") return ["C++", "Window System", "Graphics API", "Driver", "GPU", "Framebuffer"];
   if (track.id === "networking") return ["Application", "Socket", "Kernel Stack", "Driver", "NIC", "Network"];
+  if (track.id === "security-research") return ["Vulnerable code", "Memory / Assembly", "Sanitizer", "Patch", "Telemetry", "Detection"];
+  if (track.id === "game-security") return ["Game", "Memory", "Binary", "Research tool", "Detection", "Harden"];
   return ["Source", "Compiler", "Runtime", "Operating System", "Hardware"];
 }
 
@@ -129,6 +146,8 @@ export function TrackDetail({ track }: { readonly track: CurriculumTrack }) {
       {track.id === "assembly" ? <AssemblyReference /> : null}
       {track.id === "windows" ? <WindowsReference /> : null}
       {track.id === "graphics" ? <GraphicsReference /> : null}
+      {track.id === "security-research" ? <SecurityReference /> : null}
+      {track.id === "game-security" ? <GameSecurityReference /> : null}
 
       <section className="track-connections">
         <header className="track-section-heading"><div><span className="eyebrow">Keep following the system</span><h2>Esta trilha não termina aqui.</h2></div></header>
@@ -209,6 +228,50 @@ function GraphicsReference() {
         {comparisons.map((row) => <div role="row" key={row[0]}>{row.map((cell, index) => index === 0 ? <strong key={`concept-${index}`}>{cell}</strong> : <code key={`api-${index}`}>{cell}</code>)}</div>)}
       </div>
       <div className="graphics-project-strip"><Braces size={15} /><span>C++ + Win32 + OpenGL</span><span>C++ + Win32 + Direct3D 11/12</span><span>C++ + SDL3 + Vulkan</span><Network size={14} /></div>
+    </section>
+  );
+}
+
+function SecurityReference() {
+  const pairs = [
+    ["Buffer overflow", "Bounds checking / bounded copy"],
+    ["Use-after-free", "Ownership / RAII"],
+    ["Format string", "Constant format + typed args"],
+    ["Integer overflow", "Validated arithmetic before alloc"],
+    ["Protocol length bug", "max_frame + need_more + reject"]
+  ];
+  const method = ["Understand", "Build", "Break", "Observe", "Debug", "Analyze", "Fix", "Detect", "Prevent"];
+  return (
+    <section className="technical-reference windows-reference">
+      <header className="track-section-heading"><div><span className="eyebrow">Security field guide</span><h2>Ofensivo e defensivo descrevem o mesmo estado.</h2></div><Link href="/labs/security"><ShieldAlert size={13} />Abrir Security Lab <ArrowRight size={12} /></Link></header>
+      <div className="graphics-pipeline-flow">{method.map((stage, index) => <span key={stage}><b>{stage}</b>{index < method.length - 1 ? <ArrowRight size={12} /> : null}</span>)}</div>
+      <div className="win-api-families">{pairs.map(([offense, defense]) => <article key={offense}><strong>{offense}</strong><code>{defense}</code></article>)}</div>
+      <div className="syscall-reference-grid">
+        <article><header><span>WINDOWS PATH</span></header><div className="syscall-flow"><code>C++</code><ArrowRight size={10} /><code>Win32</code><ArrowRight size={10} /><code>ntdll</code><ArrowRight size={10} /><code>Kernel</code></div><p>APIs duais: o nome não é veredito; sequência, alvo e telemetria são.</p></article>
+        <article><header><span>LINUX PATH</span></header><div className="syscall-flow"><code>C</code><ArrowRight size={10} /><code>libc</code><ArrowRight size={10} /><code>syscall</code><ArrowRight size={10} /><code>Kernel</code></div><p>/proc, maps e seccomp são evidência e contenção no laboratório isolado.</p></article>
+      </div>
+    </section>
+  );
+}
+
+function GameSecurityReference() {
+  const pairs = [
+    ["Game state in memory", "Typed structs + offsetof + versioned build"],
+    ["Pointer chain", "Null checks + stride + named nodes"],
+    ["World-to-screen", "Same view-projection as the lab renderer"],
+    ["Client-trusted position", "Authoritative server + sanity + seq"],
+    ["Naive integrity hash", "Full-struct hash + speed + input correlation"]
+  ];
+  const method = ["Understand Game", "Understand Memory", "Understand Binary", "Analyze Behavior", "Build Research Tool", "Build Detection", "Improve Security"];
+  return (
+    <section className="technical-reference windows-reference">
+      <header className="track-section-heading"><div><span className="eyebrow">Game security field guide</span><h2>Pesquisa de cheat é pesquisa de estado — e depois de defesa.</h2></div><Link href="/labs/game-security"><Gamepad2 size={13} />Abrir Game Security Lab <ArrowRight size={12} /></Link></header>
+      <div className="graphics-pipeline-flow">{method.map((stage, index) => <span key={stage}><b>{stage}</b>{index < method.length - 1 ? <ArrowRight size={12} /> : null}</span>)}</div>
+      <div className="win-api-families">{pairs.map(([research, defense]) => <article key={research}><strong>{research}</strong><code>{defense}</code></article>)}</div>
+      <div className="syscall-reference-grid">
+        <article><header><span>LAB RULE</span></header><div className="syscall-flow"><code>own game</code><ArrowRight size={10} /><code>own binary</code><ArrowRight size={10} /><code>isolated AC</code><ArrowRight size={10} /><code>patch detector</code></div><p>Exercícios práticos usam só artefatos da plataforma. BattlEye, EAC e Vanguard não são alvos.</p></article>
+        <article><header><span>SOURCE → RESEARCH</span></header><div className="syscall-flow"><code>C++</code><ArrowRight size={10} /><code>binary</code><ArrowRight size={10} /><code>memory</code><ArrowRight size={10} /><code>tool</code><ArrowRight size={10} /><code>detect</code></div><p>Ferramentas são RESEARCH / DEBUG e só falam com o processo do laboratório.</p></article>
+      </div>
     </section>
   );
 }

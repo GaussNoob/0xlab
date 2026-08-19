@@ -24,18 +24,8 @@ export interface AssemblyRow {
   readonly real: boolean;
 }
 
-const REFERENCE_ROWS: readonly AssemblyRow[] = [
-  { id: "reference-0", address: "—", bytes: "—", instruction: "push rbp", sourceLine: 9, real: false },
-  { id: "reference-1", address: "—", bytes: "—", instruction: "mov rbp, rsp", sourceLine: 9, real: false },
-  { id: "reference-2", address: "—", bytes: "—", instruction: "mov edi, 8", sourceLine: 10, real: false },
-  { id: "reference-3", address: "—", bytes: "—", instruction: "call malloc", sourceLine: 10, real: false },
-  { id: "reference-4", address: "—", bytes: "—", instruction: "mov dword ptr [rax], 10", sourceLine: 13, real: false },
-  { id: "reference-5", address: "—", bytes: "—", instruction: "mov dword ptr [rax+4], 20", sourceLine: 14, real: false },
-  { id: "reference-6", address: "—", bytes: "—", instruction: "call free", sourceLine: 17, real: false }
-];
-
 export function extractAssemblyRows(disassembly?: string): readonly AssemblyRow[] {
-  if (!disassembly) return REFERENCE_ROWS;
+  if (!disassembly) return [];
   const rows: AssemblyRow[] = [];
   let sourceLine: number | undefined;
   let insideMain = false;
@@ -60,7 +50,7 @@ export function extractAssemblyRows(disassembly?: string): readonly AssemblyRow[
     });
     if (rows.length >= 120) break;
   }
-  return rows.length ? rows : REFERENCE_ROWS;
+  return rows;
 }
 
 interface PanelFrameProps {
@@ -103,17 +93,28 @@ export function PanelFrame({ id, title, meta, icon, badge, maximized, onMaximize
 interface AssemblyPaneProps {
   readonly rows: readonly AssemblyRow[];
   readonly hasRealArtifact: boolean;
+  readonly previewKind: "source" | "assembly";
   readonly activeSourceLine?: number | undefined;
   readonly currentSimulationSource?: string | undefined;
   readonly onSelectSourceLine: (line: number) => void;
 }
 
-export function AssemblyPane({ rows, hasRealArtifact, activeSourceLine, currentSimulationSource, onSelectSourceLine }: AssemblyPaneProps) {
+export function AssemblyPane({ rows, hasRealArtifact, previewKind, activeSourceLine, currentSimulationSource, onSelectSourceLine }: AssemblyPaneProps) {
+  const originLabel = hasRealArtifact
+    ? "REAL COMPILER ARTIFACT"
+    : previewKind === "assembly"
+      ? "SIMULATED SOURCE"
+      : "SOURCE-DERIVED PREVIEW";
+  const originDetail = hasRealArtifact
+    ? "linked ELF · objdump · link-time addresses"
+    : previewKind === "assembly"
+      ? "instructions from editor · compile for machine bytes"
+      : "updates with editor · compile for exact instructions and bytes";
   return (
     <div className="ll-assembly-pane">
       <div className="ll-assembly-origin" data-real={hasRealArtifact}>
-        <span>{hasRealArtifact ? "REAL COMPILER ARTIFACT" : "EDUCATIONAL REFERENCE"}</span>
-        <small>{hasRealArtifact ? "linked ELF · objdump · link-time addresses" : "compile to replace · no addresses or bytes asserted"}</small>
+        <span>{originLabel}</span>
+        <small>{originDetail}</small>
       </div>
       <div className="ll-assembly-head"><span>ADDRESS</span><span>BYTES</span><span>INSTRUCTION</span></div>
       <div className="ll-assembly-lines">
@@ -133,7 +134,7 @@ export function AssemblyPane({ rows, hasRealArtifact, activeSourceLine, currentS
           </button>
         ))}
       </div>
-      {!hasRealArtifact ? <div className="ll-awaiting-build"><Braces size={12} /><span>Build &amp; Run gera Assembly e machine code do binário real.</span></div> : null}
+      {!hasRealArtifact ? <div className="ll-awaiting-build"><Braces size={12} /><span>Preview sincronizado com o source. Build &amp; Run gera o Assembly exato do compilador.</span></div> : null}
     </div>
   );
 }

@@ -11,6 +11,9 @@ import { Topbar } from "./topbar";
 
 export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
   const pathname = usePathname();
+  const focusWorkspace = pathname === "/labs/low-level"
+    || pathname.startsWith("/labs/security")
+    || pathname.startsWith("/labs/game-security");
   const [commandOpen, setCommandOpen] = useState(false);
   const [textScale, setTextScale] = useState<"comfortable" | "large" | "extra-large">("comfortable");
   const closeCommand = useCallback(() => setCommandOpen(false), []);
@@ -40,7 +43,7 @@ export function AppShell({ children }: Readonly<{ children: ReactNode }>) {
   }, []);
 
   return (
-    <div className="app-shell" data-focus-workspace={pathname === "/labs/low-level"} data-text-scale={textScale}>
+    <div className="app-shell" data-focus-workspace={focusWorkspace} data-text-scale={textScale}>
       <Topbar onOpenCommand={() => setCommandOpen(true)} onCycleTextScale={cycleTextScale} textScale={textScale} />
       <ActivityRail />
       <CourseSidebar />

@@ -291,6 +291,74 @@ const graphicsTrack: CurriculumTrack = {
   ]
 };
 
+const securityResearchTrack: CurriculumTrack = {
+  id: "security-research",
+  title: "Security Research — vulnerabilidades, malware sintético e defesa",
+  shortTitle: "Security Research",
+  kicker: "Understand, break, observe, fix, detect",
+  description: "Laboratório avançado de C/C++ para estudar como ataques, malware e defesas funcionam internamente: corrupção de memória, fuzzing, binários próprios, Windows/Linux, redes isoladas e detecção — sempre em sandbox descartável, com amostras sintéticas e ênfase em correção.",
+  tone: "rose",
+  href: "/learn/security-research",
+  lessons: 72,
+  labs: 18,
+  projects: 8,
+  level: "Avançado",
+  prerequisites: ["C/C++", "Ponteiros e memória", "Assembly", "Windows ou Linux", "Reverse Engineering", "Cybersecurity"],
+  outcomes: [
+    "Explicar como uma vulnerabilidade nasce no código, aparece na memória e chega ao assembly",
+    "Diagnosticar corrupção com sanitizers, debugger e comparação patched/unpatched",
+    "Analisar amostras sintéticas e construir detecção no próprio laboratório",
+    "Reescrever o mesmo programa com contratos seguros, limites e telemetria"
+  ],
+  modules: [
+    { id: "sres-fundamentals", index: "01", title: "Hacking fundamentals em C/C++", summary: "Memória, ponteiros, buffers, processos, sockets e a superfície que erros desses componentes abrem.", topics: ["C memory model", "unsafe APIs", "processes and privileges", "sockets and files", "trust boundaries"], bridge: "C/C++ → pointers → memory → OS API → attack surface", lessons: 8, lab: { label: "Security Lab", href: "/labs/security?view=corruption" } },
+    { id: "sres-corruption", index: "02", title: "Memory Corruption Lab", summary: "Classes espaciais e temporais: overflow, UAF, integer, format string — do código à causa e à correção.", topics: ["stack overflow", "heap overflow", "use-after-free", "integer overflow", "format string"], bridge: "vulnerable code → memory → crash → debugger → root cause → secure version", lessons: 10, lab: { label: "Overflow Visualizer", href: "/labs/security?view=corruption" } },
+    { id: "sres-mitigations", index: "03", title: "Mitigações e Secure Compiler Lab", summary: "ASLR, NX/DEP, canaries, PIE, RELRO, CFG e sanitizers: o que dificultam, como aparecem no binário e o que não corrigem.", topics: ["ASLR", "NX and DEP", "stack canaries", "PIE RELRO CFG", "sanitizers"], bridge: "source flags → binary properties → runtime → remaining risk", lessons: 8, lab: { label: "Compiler Mitigations", href: "/labs/security?view=compiler" } },
+    { id: "sres-fuzzing", index: "04", title: "Fuzzing de software próprio", summary: "Mutação, cobertura, corpus, crashes, minimização e harness com ASan/UBSan contra parsers da plataforma.", topics: ["mutation fuzzing", "coverage-guided", "corpus", "crash triage", "harness design"], bridge: "input → fuzzer → program → crash → ASAN → fix", lessons: 8, lab: { label: "Fuzzing Lab", href: "/labs/security?view=fuzzing" } },
+    { id: "sres-binary", index: "05", title: "Binary security educacional", summary: "Frames, fluxo de controle, crashes e patch analysis em binários deliberadamente vulneráveis criados pelo laboratório.", topics: ["stack frames", "control flow", "crash analysis", "patch comparison", "secure rewrite"], bridge: "C buffer → stack → RSP/RBP → RIP → crash evidence", lessons: 8, lab: { label: "Low-Level Lab", href: "/labs/low-level" } },
+    { id: "sres-windows", index: "06", title: "Windows security internals", summary: "APIs duais, PE, artefatos de persistência, injeção em teoria e tokens — com foco em observação e detecção.", topics: ["Win32 dual use", "PE security flags", "persistence artifacts", "process injection theory", "tokens and privileges"], bridge: "C++ → Win32 → ntdll → kernel → object / process / memory", lessons: 8, lab: { label: "PE Security Analyzer", href: "/labs/security?view=analysis" } },
+    { id: "sres-linux", index: "07", title: "Linux security internals", summary: "ELF, /proc, capabilities, cron/systemd e seccomp como evidência e contenção, não como receita de persistência furtiva.", topics: ["ELF and mappings", "capabilities", "proc evidence", "cron systemd artifacts", "seccomp"], bridge: "C → libc → syscall → kernel → /proc evidence", lessons: 6 },
+    { id: "sres-network", index: "08", title: "Network security com C/C++", summary: "Parsing de pacotes sintéticos, bugs de protocolo, C2 isolado educacional e redesenho seguro.", topics: ["packet parsing", "protocol bugs", "isolated lab protocol", "replay and framing", "secure redesign"], bridge: "bytes → parser → validated state → isolated peer", lessons: 8, lab: { label: "Network Security Lab", href: "/labs/security?view=fuzzing" } },
+    { id: "sres-reverse", index: "09", title: "Reverse engineering aplicada", summary: "Source→binary, crackmes próprios, strings/imports, ofuscação e indicadores anti-análise com ênfase em reconhecimento.", topics: ["source to binary", "crackme method", "strings and imports", "obfuscation analysis", "anti-analysis indicators"], bridge: "source → compiler → binary → disassembly → explanation", lessons: 8, lab: { label: "Lab Challenges", href: "/labs/security?view=challenges" } },
+    { id: "sres-malware", index: "10", title: "Malware research sintético", summary: "Famílias, anatomia, simuladores benignos, ransomware e infostealer apenas com dados fictícios na sandbox.", topics: ["malware families", "loader anatomy", "synthetic samples", "ransomware simulation", "infostealer simulation"], bridge: "architecture → observable behavior → indicators → detection → mitigation", lessons: 8, lab: { label: "Malware Behavior Simulator", href: "/labs/security?view=malware" } },
+    { id: "sres-detection", index: "11", title: "Detection engineering e coding seguro", summary: "IOC versus comportamento, YARA, Mini EDR, telemetria e o par ofensivo↔defensivo de cada classe de bug.", topics: ["IOC vs behavior", "YARA", "Mini EDR", "telemetry", "secure coding pairs"], bridge: "lab events → detection rule → evidence → developer fix", lessons: 8, lab: { label: "Mini EDR Simulator", href: "/labs/security?view=detection" } }
+  ]
+};
+
+const gameSecurityTrack: CurriculumTrack = {
+  id: "game-security",
+  title: "Game Security & Cheat Research",
+  shortTitle: "Game Security",
+  kicker: "Understand the game, then protect it",
+  description: "Pesquisa de baixo nível sobre estado de jogo, memória, binários e anti-cheat: jogos educacionais da plataforma, ferramentas de debug e detecção — nunca títulos online ou anti-cheats reais como alvo.",
+  tone: "amber",
+  href: "/learn/game-security",
+  lessons: 64,
+  labs: 16,
+  projects: 5,
+  level: "Avançado",
+  prerequisites: ["C/C++", "Ponteiros e memória", "Assembly", "Windows ou Linux", "Graphics básico", "Security Research"],
+  outcomes: [
+    "Mapear game state, entities e offsets no processo do laboratório",
+    "Explicar world-to-screen, input e hooking como arquitetura, não como produto",
+    "Construir ferramentas de pesquisa e um mini anti-cheat contra o próprio jogo",
+    "Validar estado no servidor e corrigir falhas do anti-cheat fictício"
+  ],
+  modules: [
+    { id: "gsec-fundamentals", index: "01", title: "Cheat fundamentals", summary: "Game process, game state, entities e o loop que as atualiza — no jogo educacional da plataforma.", topics: ["game state", "entity", "player state", "game loop", "lab process"], bridge: "Game → process → memory → game state → research tool", lessons: 8, lab: { label: "Arena Lab", href: "/labs/game-security?view=arena" } },
+    { id: "gsec-memory", index: "02", title: "Memory research", summary: "Layout de Player, stack/heap/globals e inspeção ao vivo enquanto o lab game executa.", topics: ["Player layout", "stack heap globals", "live inspection", "watchpoints", "version offsets"], bridge: "struct Player → address → fields → changing bytes", lessons: 8, lab: { label: "Memory Inspector", href: "/labs/game-security?view=arena" } },
+    { id: "gsec-pointers", index: "03", title: "Pointer chains e offsets", summary: "Cadeias GameState → Manager → Player → Position e offsets que mudam entre builds.", topics: ["pointer chains", "nested structs", "offsets", "multi-level pointers", "layout discovery"], bridge: "GameState → PlayerManager → Player → Position → X/Y/Z", lessons: 8, lab: { label: "Pointer Chain", href: "/labs/game-security?view=chains" } },
+    { id: "gsec-world", index: "04", title: "World, camera e world-to-screen", summary: "Entity list, coordenadas, view/projection e a matemática 3D→2D no jogo do laboratório.", topics: ["entity list", "world coordinates", "view matrix", "projection", "world-to-screen"], bridge: "3D world → camera → projection → 2D screen", lessons: 8, lab: { label: "World-to-Screen", href: "/labs/game-security?view=world" } },
+    { id: "gsec-aim", index: "05", title: "Aim math educacional", summary: "Vetores, distância, ângulos, interpolação e line of sight — compreensão, não assistência contra jogadores reais.", topics: ["vectors", "distance", "angles", "interpolation", "line of sight"], bridge: "player → enemy → camera → crosshair math", lessons: 6, lab: { label: "Aim Math", href: "/labs/game-security?view=world" } },
+    { id: "gsec-input", index: "06", title: "Input system", summary: "Polling versus eventos, teclado/mouse e APIs Win32 observadas na própria janela do laboratório.", topics: ["polling", "event-driven input", "Win32 input", "mouse delta", "lab observer"], bridge: "device → OS queue → game poll/event → command", lessons: 6, lab: { label: "Input System", href: "/labs/game-security?view=input" } },
+    { id: "gsec-tools", index: "07", title: "Internal, external e hooking", summary: "Fronteiras de processo, módulos e interceptação de funções só entre processos do laboratório.", topics: ["internal tools", "external tools", "process boundary", "function hook", "IAT trampoline"], bridge: "original function → hook → logger → original function", lessons: 8, lab: { label: "Hook Lab", href: "/labs/game-security?view=hook" } },
+    { id: "gsec-assembly", index: "08", title: "Assembly para game research", summary: "De float distance() ao assembly e aos registradores no binário compilado pela plataforma.", topics: ["source to asm", "distance function", "registers", "compiler lowering", "ABI"], bridge: "C++ → compiler → assembly → machine code → CPU", lessons: 6, lab: { label: "Low-Level Lab", href: "/labs/low-level" } },
+    { id: "gsec-reverse", index: "09", title: "Game reverse engineering", summary: "Binários próprios em níveis: strings, funções, structs, game state e rendering — depois o source.", topics: ["strings", "functions", "structures", "game state RE", "rendering RE"], bridge: "binary → facts → hypothesis → original source", lessons: 8, lab: { label: "RE Challenges", href: "/labs/game-security?view=challenges" } },
+    { id: "gsec-anticheat", index: "10", title: "Anti-cheat research", summary: "Integridade, telemetria, AC fictício da plataforma e o desafio de achar a fraqueza para depois corrigi-la.", topics: ["integrity", "telemetry", "behavioral detection", "fictional AC", "hardening the AC"], bridge: "game → telemetry → detection engine → explanation → patch", lessons: 8, lab: { label: "Mini Anti-Cheat", href: "/labs/game-security?view=anticheat" } },
+    { id: "gsec-network", index: "11", title: "Server-side e packets", summary: "Servidor autoritativo local, sanity checks, packet viewer e replay do lab game.", topics: ["authoritative server", "sanity checks", "packets", "replay", "sequence"], bridge: "client → TCP/UDP lab → server validation → state", lessons: 8, lab: { label: "Packet / Replay", href: "/labs/game-security?view=network" } }
+  ]
+};
+
 export const curriculumTracks: readonly CurriculumTrack[] = [
   compactTracks[0]!,
   compactTracks[1]!,
@@ -302,7 +370,9 @@ export const curriculumTracks: readonly CurriculumTrack[] = [
   compactTracks[5]!,
   graphicsTrack,
   compactTracks[6]!,
-  compactTracks[7]!
+  compactTracks[7]!,
+  securityResearchTrack,
+  gameSecurityTrack
 ] as const;
 
 export const curriculumTotals = curriculumTracks.reduce(

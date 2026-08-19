@@ -77,6 +77,9 @@ test("runs editable packet scenarios across every Network Lab tool", async ({ pa
   await expect(page.getByText("NETWORK LAB", { exact: true })).toBeVisible();
   await expect(page.getByText("EDUCATIONAL SIMULATION", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Topologia interativa da rede")).toBeVisible();
+  const topologyScene = page.locator(".network-topology-scene");
+  await expect.poll(() => topologyScene.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThan(300);
+  await expect(topologyScene).toHaveAttribute("data-playing", "false");
   await page.screenshot({ path: "../../artifacts/network-lab-topology.png", fullPage: false });
 
   await page.getByRole("button", { name: /DNS query/ }).click();
@@ -265,4 +268,41 @@ test("saves a topic completion and refreshes real sidebar progress", async ({ pa
   await expect(page.getByRole("button", { name: /Lição concluída/ })).toBeVisible();
   await expect(page.locator('.tree-lesson[data-current="true"] .lucide-check')).toBeVisible();
   await expect(page.locator(".sidebar-progress-line > span")).toHaveText("2%");
+});
+
+test("opens the Game Security Lab input observer, W2S HUD and fictional anti-cheat", async ({ page }) => {
+  await page.goto("/labs/game-security");
+  await expect(page.getByRole("heading", { name: /Understand the game/ })).toBeVisible();
+  await expect(page.getByText(/Lab games only/)).toBeVisible();
+  await expect(page.getByLabel("Arena educacional top-down")).toBeVisible();
+  await page.getByRole("button", { name: "Mini Anti-Cheat" }).click();
+  await expect(page.getByText(/Bypass research/)).toBeVisible();
+  await page.getByRole("button", { name: "Teleport poke" }).click();
+  await expect(page.getByText(/SuspiciousInput/).first()).toBeVisible();
+  await page.getByRole("button", { name: "World / Aim" }).click();
+  await expect(page.getByText(/Não há assistência contra jogadores reais/)).toBeVisible();
+  await expect(page.getByLabel(/World to screen overlay for TRAINING_DRONE_A/)).toBeVisible();
+  await expect(page.getByText("pitch", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Input System" }).click();
+  const inputObserver = page.getByLabel("Input observer do Game Security Lab");
+  await inputObserver.focus();
+  await page.keyboard.down("w");
+  await expect(page.getByText(/W DOWN/)).toBeVisible();
+  await page.keyboard.up("w");
+  await page.keyboard.press("Space");
+  await expect(page.getByText(/Space reconhecido · count 1/)).toBeVisible();
+});
+
+test("opens the Security Lab overflow model and keeps the sandbox charter visible", async ({ page }) => {
+  await page.goto("/labs/security");
+  await expect(page.getByRole("heading", { name: /Entenda\. Quebre no lab/ })).toBeVisible();
+  await expect(page.getByText(/Disposable sandbox/)).toBeVisible();
+  await expect(page.getByLabel("Modelo educacional de stack overflow")).toBeVisible();
+  await page.getByLabel("Input do overflow educacional").fill("AAAAAAAAAAAAAAAA");
+  await expect(page.getByText(/would be affected/).first()).toBeVisible();
+  await page.getByRole("button", { name: "Ver versão segura" }).click();
+  await expect(page.getByText(/Nenhum store fora do objeto/)).toBeVisible();
+  await page.getByRole("button", { name: "Malware Analysis" }).click();
+  await expect(page.getByText("FAKE_TOKEN_123")).toBeVisible();
+  await expect(page.getByText(/não implica malícia|Uma API não é maliciosa/)).toBeVisible();
 });

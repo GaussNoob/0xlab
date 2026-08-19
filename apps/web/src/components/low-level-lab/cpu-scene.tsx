@@ -28,10 +28,17 @@ function labelSprite(text: string, color = "#9ba5b1", width = 2.3): THREE.Sprite
   const context = canvas.getContext("2d");
   if (context) {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.font = "650 50px 'Cascadia Code', Consolas, monospace";
     context.fillStyle = color;
     context.textAlign = "center";
-    context.fillText(text, 256, 76);
+    context.textBaseline = "middle";
+
+    const maxTextWidth = canvas.width - 28;
+    const preferredSize = 50;
+    context.font = `650 ${preferredSize}px 'Cascadia Code', Consolas, monospace`;
+    const measuredWidth = Math.max(1, context.measureText(text).width);
+    const fittedSize = Math.max(18, Math.min(preferredSize, Math.floor(preferredSize * maxTextWidth / measuredWidth)));
+    context.font = `650 ${fittedSize}px 'Cascadia Code', Consolas, monospace`;
+    context.fillText(text, canvas.width / 2, canvas.height / 2, maxTextWidth);
   }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;

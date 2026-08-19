@@ -95,6 +95,12 @@ export interface CTraceEvent {
   readonly kind: "declare" | "pointer" | "allocation" | "write" | "read" | "call" | "free" | "return";
 }
 
+export interface AssemblyPreviewInstruction {
+  readonly id: string;
+  readonly instruction: string;
+  readonly sourceLine: number;
+}
+
 export type SourceVisualNodeKind =
   | "source"
   | "function"

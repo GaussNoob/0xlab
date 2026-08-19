@@ -91,6 +91,16 @@ const domainLensByTrack: Readonly<Record<string, DomainLens>> = {
     representation: "Modele assets, atores, trust boundaries, entradas hostis, invariantes e controles. Uma vulnerabilidade existe quando uma transição permitida viola uma propriedade de segurança.",
     observation: "Reproduza somente em laboratório autorizado, capture a primeira violação, aplique a mitigação e mantenha um teste de regressão que demonstre a propriedade restaurada.",
     boundary: "Separe capacidade técnica de autorização, falha de correção de impacto de segurança e mitigação parcial de eliminação da causa."
+  },
+  "security-research": {
+    representation: "Desenhe o objeto C/C++, o bound, o frame, a API do sistema e o evento observável. Ataque, detecção e correção descrevem o mesmo estado em três vocabulários.",
+    observation: "Use sandbox descartável, sanitizers, timeline do laboratório e comparação patched/unpatched. Preserve input mínimo, stack e o invariante restaurado.",
+    boundary: "Capacidade educacional não é autorização sobre sistemas alheios. Amostras, C2 e ransomware existem só como simuladores sintéticos isolados."
+  },
+  "game-security": {
+    representation: "Desenhe o processo do lab game, o layout de Player, a cadeia de ponteiros, a matriz de câmera e o evento de telemetria. Cheat research e anti-cheat descrevem o mesmo estado.",
+    observation: "Use o Arena Lab, dumps versionados, Mini Anti-Cheat e o packet viewer loopback. Preserve offset, hash do binário e o invariante que o detector deve impor.",
+    boundary: "Somente jogos, binários e o AC fictício da plataforma. BattlEye, Easy Anti-Cheat, Vanguard e títulos online não são alvos de exercício."
   }
 };
 

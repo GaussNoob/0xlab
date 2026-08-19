@@ -7,9 +7,11 @@ import {
   Braces,
   Cpu,
   FlaskConical,
+  Gamepad2,
   MemoryStick,
   Network,
   ScanSearch,
+  ShieldAlert,
   ShieldCheck,
   Terminal
 } from "lucide-react";
@@ -27,13 +29,17 @@ const iconByTrack: Readonly<Record<string, LucideIcon>> = {
   networking: Network,
   graphics: Boxes,
   "reverse-engineering": ScanSearch,
-  cybersecurity: ShieldCheck
+  cybersecurity: ShieldCheck,
+  "security-research": ShieldAlert,
+  "game-security": Gamepad2
 };
 
 const learningChains = [
   { title: "Uma função até a CPU", nodes: ["C++", "Compiler", "Assembly", "Machine code", "CPU", "Memory"], tone: "cyan" },
   { title: "Uma janela até a tela", nodes: ["C++", "Win32 / SDL3", "Graphics API", "Driver", "GPU", "Monitor"], tone: "violet" },
-  { title: "Um arquivo até o hardware", nodes: ["CreateFile", "Win32", "Native API", "Kernel", "Driver", "Storage"], tone: "amber" }
+  { title: "Um arquivo até o hardware", nodes: ["CreateFile", "Win32", "Native API", "Kernel", "Driver", "Storage"], tone: "amber" },
+  { title: "Uma vulnerabilidade até a defesa", nodes: ["C bug", "Memory", "Sanitizer", "Patch", "Mitigation", "Detection"], tone: "rose" },
+  { title: "Um cheat até a proteção", nodes: ["Game state", "Memory", "Research tool", "Detection", "Server", "Harden"], tone: "amber" }
 ] as const;
 
 export const metadata = { title: "Learn" };
@@ -45,7 +51,7 @@ export default function LearnPage() {
         <div>
           <span className="eyebrow">Computer engineering curriculum / 2026.08</span>
           <h1>Do source ao silício.<br />Sem caixas-pretas.</h1>
-          <p>Uma base única para C, C++, Assembly, sistemas, Windows, Linux, redes, gráficos, engenharia reversa e segurança. Cada trilha volta a conectar linguagem, memória, sistema operacional, driver e hardware.</p>
+          <p>Uma base única para C, C++, Assembly, sistemas, Windows, Linux, redes, gráficos, engenharia reversa, cibersegurança, research de malware sintético e game security. Cada trilha volta a conectar linguagem, memória, sistema operacional, driver e hardware.</p>
           <div className="curriculum-hero-actions">
             <Link className="button-primary" href="/learn/assembly">Começar por Assembly <ArrowRight size={13} /></Link>
             <Link className="button-secondary" href="/labs">Explorar laboratórios <FlaskConical size={13} /></Link>
@@ -60,7 +66,7 @@ export default function LearnPage() {
       </header>
 
       <section className="curriculum-section">
-        <header className="section-bar"><span>Knowledge map</span><span>11 domains · one connected machine model</span></header>
+        <header className="section-bar"><span>Knowledge map</span><span>{curriculumTracks.length} domains · one connected machine model</span></header>
         <div className="curriculum-domain-list">
           {curriculumTracks.map((track, index) => {
             const Icon = iconByTrack[track.id] ?? Cpu;
@@ -97,7 +103,7 @@ export default function LearnPage() {
       </section>
 
       <section className="advanced-track-cards">
-        {curriculumTracks.filter((track) => ["assembly", "windows", "graphics"].includes(track.id)).map((track) => {
+        {curriculumTracks.filter((track) => ["assembly", "windows", "graphics", "security-research", "game-security"].includes(track.id)).map((track) => {
           const Icon = iconByTrack[track.id] ?? Cpu;
           return (
             <article data-tone={track.tone} key={track.id}>

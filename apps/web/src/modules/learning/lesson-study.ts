@@ -233,6 +233,26 @@ const domainProfiles: Readonly<Record<string, DomainStudyProfile>> = {
     generatedLanguage: "text",
     generatedFilename: "security-proof.txt",
     generatedTemplate: (topic) => `ASSET       estado protegido por ${topic}\nINPUT       bytes/ações não confiáveis\nVALIDATION  formato + faixa + autorização + limite de recurso\nOPERATION   somente sobre estado validado\nREGRESSION  caso válido + edge cases + entrada hostil controlada`
+  },
+  "security-research": {
+    stakes: "Pesquisa de segurança em C/C++ só é honesta quando o invariante, a região de memória, o detector e a correção aparecem no mesmo experimento isolado.",
+    uses: ["vulnerability research", "application security", "malware analysis", "detection engineering", "secure development", "lab CTF interno"],
+    internalModel: "Siga source → bytes → frame/heap → CPU → syscall/API → evento de telemetria → patch, nomeando o que é observação e o que é hipótese.",
+    observation: "Reproduza no sandbox da plataforma; capture ASan/timeline, compare v1/v2 e registre a tríade atacante/defensor/desenvolvedor.",
+    caveat: "Simuladores ensinam arquitetura e detecção. Não implementam malware operacional, persistência furtiva no host nem evasão de produtos reais.",
+    generatedLanguage: "c",
+    generatedFilename: "lab-secure-bound.c",
+    generatedTemplate: (topic) => `/* ${topic} — bound visível, destino declara capacidade */\n#include <stddef.h>\n#include <string.h>\n\nvoid lab_copy(char *dst, size_t cap, const char *src) {\n    if (cap == 0) return;\n    size_t n = strnlen(src, cap);\n    if (n == cap) n = cap - 1;\n    memcpy(dst, src, n);\n    dst[n] = 0;\n}\n`
+  },
+  "game-security": {
+    stakes: "Game security educacional só é honesta quando o estado do jogo, o layout de memória, a ferramenta de pesquisa e o detector descrevem o mesmo processo do laboratório.",
+    uses: ["game memory research", "entity/world debug", "anti-cheat design", "server-side validation", "binary analysis of lab games", "internal CTF"],
+    internalModel: "Siga Game → process → memory → game state → research tool → telemetry → detection → patch do AC fictício, nomeando offsets e o build.",
+    observation: "Reproduza só no Arena Lab; capture dump, cadeia de ponteiros, pacote e o evento do Mini Anti-Cheat. Compare naive vs strong.",
+    caveat: "Ferramentas são RESEARCH/DEBUG contra binários próprios. Não há alvo em jogos online nem bypass de anti-cheats reais.",
+    generatedLanguage: "cpp",
+    generatedFilename: "lab-player-layout.cpp",
+    generatedTemplate: (topic) => `/* ${topic} — layout do lab game, não de um título de terceiros */\n#include <cstddef>\n\nstruct Player {\n    float x, y, z;\n    int health;\n    int armor;\n};\n\nstatic_assert(offsetof(Player, health) == 12);\n`
   }
 };
 

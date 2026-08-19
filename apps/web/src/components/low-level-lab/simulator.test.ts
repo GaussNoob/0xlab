@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createInitialCpuState, inferCTrace, parseAssembly, replaceRegister, snapshotAfter, stepCpu } from "./simulator";
+import { createInitialCpuState, inferCAssemblyPreview, inferCTrace, parseAssembly, replaceRegister, snapshotAfter, stepCpu } from "./simulator";
 
 describe("low-level CPU simulator", () => {
   it("steps deterministic arithmetic and flags without claiming native state", () => {
@@ -27,5 +27,28 @@ describe("low-level CPU simulator", () => {
     const events = inferCTrace("int *ptr = malloc(sizeof *ptr);\n*ptr = 42;\nfree(ptr);");
     expect(events.map((event) => event.kind)).toEqual(["allocation", "write", "free"]);
     expect(events.map((event) => event.detail).join(" ")).not.toMatch(/0x[\da-f]+/i);
+  });
+
+  it("rebuilds the source-derived Assembly preview when C changes", () => {
+    const hello = inferCAssemblyPreview(`#include <stdio.h>
+int main(void) {
+  printf("Ola mundo!\\n");
+  return 0;
+}`);
+    const allocation = inferCAssemblyPreview(`int main(void) {
+  int *point = malloc(sizeof *point);
+  free(point);
+  return 0;
+}`);
+
+    expect(hello.map((row) => row.instruction)).toEqual([
+      "push rbp", "mov rbp, rsp",
+      "lea rdi, [rip + .LC0]", "xor eax, eax", "call printf",
+      "mov eax, 0", "leave", "ret"
+    ]);
+    expect(hello.find((row) => row.instruction === "call printf")?.sourceLine).toBe(3);
+    expect(allocation.map((row) => row.instruction)).toContain("call malloc");
+    expect(allocation.map((row) => row.instruction)).toContain("call free");
+    expect(allocation.map((row) => row.instruction)).not.toContain("call printf");
   });
 });

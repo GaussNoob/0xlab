@@ -38,9 +38,9 @@ function neighborHref(lesson: CurriculumLessonRef) {
   return lessonHref(lesson.track, lesson.module, lesson.topic);
 }
 
-function codeDestination(language: string): CodeDestination | undefined {
-  if (language === "c" || language === "cpp") return "playground";
+function codeDestination(language: string, trackId: string): CodeDestination | undefined {
   if (language === "asm") return "low-level";
+  if (language === "c" || language === "cpp") return trackId === "security-research" || trackId === "game-security" ? "low-level" : "playground";
   return undefined;
 }
 
@@ -177,8 +177,8 @@ export function CurriculumLesson({ lesson, guide }: CurriculumLessonProps) {
                       language={example.code.language}
                       filename={example.code.filename}
                       lineExplanations={example.lineExplanations}
-                      openIn={codeDestination(example.code.language)}
-                      actionLabel={example.code.language === "asm" ? "Open in Low-Level Lab" : "Open in Playground"}
+                      openIn={codeDestination(example.code.language, track.id)}
+                      actionLabel={example.code.language === "asm" || track.id === "security-research" || track.id === "game-security" ? "Open in Low-Level Lab" : "Open in Playground"}
                     />
                   ) : null}
                   <div className="example-observation-grid">
@@ -216,7 +216,7 @@ export function CurriculumLesson({ lesson, guide }: CurriculumLessonProps) {
             </div>
             <div className="generated-code-study">
               <header><span>CODE → MACHINE / RUNTIME</span><strong>{study.generatedCode.title}</strong></header>
-              <CodeBlock code={study.generatedCode.generated.source} language={study.generatedCode.generated.language} filename={study.generatedCode.generated.filename} openIn={codeDestination(study.generatedCode.generated.language)} />
+              <CodeBlock code={study.generatedCode.generated.source} language={study.generatedCode.generated.language} filename={study.generatedCode.generated.filename} openIn={codeDestination(study.generatedCode.generated.language, track.id)} />
               <div className="generated-observations">{study.generatedCode.observations.map((observation) => <p key={observation}><Check size={11} />{observation}</p>)}</div>
               <aside><FlaskConical size={13} /><div><strong>Experimento</strong><p>{study.generatedCode.experiment}</p></div></aside>
               <small><AlertTriangle size={11} />{study.generatedCode.caveat}</small>
@@ -238,8 +238,8 @@ export function CurriculumLesson({ lesson, guide }: CurriculumLessonProps) {
                 <article className="mistake-study" key={mistake.title}>
                   <header><span>DEBUG CHALLENGE {String(index + 1).padStart(2, "0")}</span><h3>{mistake.title}</h3><p>{mistake.question}</p></header>
                   <div className="before-after-code">
-                    <div><span><AlertTriangle size={11} /> CÓDIGO / RACIOCÍNIO PROBLEMÁTICO</span><CodeBlock code={mistake.wrong.source} language={mistake.wrong.language} filename={mistake.wrong.filename} openIn={codeDestination(mistake.wrong.language)} /></div>
-                    <div><span><Check size={11} /> CORREÇÃO</span><CodeBlock code={mistake.corrected.source} language={mistake.corrected.language} filename={mistake.corrected.filename} openIn={codeDestination(mistake.corrected.language)} /></div>
+                    <div><span><AlertTriangle size={11} /> CÓDIGO / RACIOCÍNIO PROBLEMÁTICO</span><CodeBlock code={mistake.wrong.source} language={mistake.wrong.language} filename={mistake.wrong.filename} openIn={codeDestination(mistake.wrong.language, track.id)} /></div>
+                    <div><span><Check size={11} /> CORREÇÃO</span><CodeBlock code={mistake.corrected.source} language={mistake.corrected.language} filename={mistake.corrected.filename} openIn={codeDestination(mistake.corrected.language, track.id)} /></div>
                   </div>
                   <dl>
                     <div><dt>SINTOMA</dt><dd>{mistake.symptom}</dd></div>
@@ -287,7 +287,7 @@ export function CurriculumLesson({ lesson, guide }: CurriculumLessonProps) {
               <div className="real-project-files">
                 {depth.example.files.map((file) => (
                   <article key={file.filename}>
-                    <CodeBlock code={file.source} language={file.language} filename={file.filename} lineExplanations={study.examples.find((example) => example.code?.language === file.language)?.lineExplanations} openIn={codeDestination(file.language)} />
+                    <CodeBlock code={file.source} language={file.language} filename={file.filename} lineExplanations={study.examples.find((example) => example.code?.language === file.language)?.lineExplanations} openIn={codeDestination(file.language, track.id)} />
                     <p>{file.explanation}</p>
                   </article>
                 ))}

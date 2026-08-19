@@ -637,6 +637,54 @@ c++ -std=c++20 -Wall -Wextra triangle.cpp glad/src/gl.c \
   extensions: ["Adicione EBO e desenhe um quadrado.", "Passe uma matriz MVP por uniform.", "Capture o frame e inspecione atributos, shaders e draw call."]
 };
 
+const boundedCopyLab: RealWorldExample = {
+  id: "bounded-copy-lab",
+  title: "Cópia bounded versus strcpy",
+  summary: "O destino declara capacidade; a origem nunca escolhe sozinha quantos bytes cabem. ASan aponta o primeiro store ilegal da versão educacional; o teste de regressão trava o bound.",
+  platform: "Linux sandbox / Low-Level Lab",
+  level: "Avançado",
+  concepts: ["stack overflow", "bounds", "ASan", "secure rewrite"],
+  files: [{
+    language: "c",
+    filename: "bounded_copy.c",
+    source: String.raw`#include <stdio.h>
+#include <string.h>
+#include <stddef.h>
+
+enum { CAP = 8 };
+
+static void bounded_copy(char *dst, size_t cap, const char *src) {
+    if (cap == 0) return;
+    size_t n = strnlen(src, cap);
+    if (n == cap) n = cap - 1;
+    memcpy(dst, src, n);
+    dst[n] = '\0';
+}
+
+int main(void) {
+    char buffer[CAP];
+    bounded_copy(buffer, sizeof buffer, "AAAAAAAAAAAAAAAA");
+    puts(buffer);
+    return 0;
+}`,
+    explanation: "A entrada longa é truncada ao objeto. Compare com strcpy no Security Lab: ali o modelo educacional marca saved RBP e return address como regiões que seriam afetadas — sem construir payload."
+  }],
+  commands: {
+    language: "shell",
+    filename: "build.sh",
+    source: "cc -std=c17 -Wall -Wextra -g -O1 -fsanitize=address,undefined bounded_copy.c -o bounded_copy\n./bounded_copy",
+    explanation: "O sanitizer permanece no build de teste. A versão vulnerável do laboratório produz relatório OOB; esta deve terminar limpa."
+  },
+  expected: "A saída contém no máximo 7 caracteres visíveis mais NUL. Nenhum byte além de buffer[8] muda. ASan silencioso.",
+  walkthrough: [
+    { title: "Declarar capacidade", detail: "sizeof buffer viaja com o ponteiro; strcpy não recebe esse número." },
+    { title: "Limitar a cópia", detail: "strnlen até cap evita ler a origem sem teto; memcpy copia só n bytes." },
+    { title: "Terminar", detail: "NUL explícito mantém o objeto como string C válida." },
+    { title: "Regredir", detail: "Uma entrada de 32 A deve continuar passando após o patch." }
+  ],
+  extensions: ["Troque o buffer por um heap buffer com o mesmo contrato.", "Adicione um teste que prova que bytes sentinela após o objeto não mudam."]
+};
+
 const exampleByTopic: Readonly<Record<string, RealWorldExample>> = {
   "c-pointers:pointers": dynamicVector,
   "c-pointers:heap": dynamicVector,
@@ -658,7 +706,10 @@ const exampleByTopic: Readonly<Record<string, RealWorldExample>> = {
   "gfx-pipeline:draw call": openGlTriangle,
   "gfx-opengl:OpenGL context": openGlTriangle,
   "gfx-opengl:VAO/VBO/EBO": openGlTriangle,
-  "gfx-opengl:GLSL": openGlTriangle
+  "gfx-opengl:GLSL": openGlTriangle,
+  "sres-corruption:stack overflow": boundedCopyLab,
+  "sres-fundamentals:unsafe APIs": boundedCopyLab,
+  "sres-binary:secure rewrite": boundedCopyLab
 };
 
 export function getRealWorldExample(moduleId: string, topic: string): RealWorldExample | undefined {

@@ -1,4 +1,5 @@
 import type {
+  AssemblyPreviewInstruction,
   CTraceEvent,
   CpuState,
   ParsedInstruction,
@@ -362,6 +363,117 @@ export function formatHex(value: bigint, width = 16): string {
 
 export function instructionCount(disassembly: string): number {
   return disassembly.split(/\r?\n/).filter((line) => /^\s*[0-9a-f]+:\s+(?:[0-9a-f]{2}\s+)+/i.test(line)).length;
+}
+
+function compactPreviewOperand(value: string): string {
+  const compact = value.replace(/\s+/g, " ").trim();
+  return compact.length > 28 ? `${compact.slice(0, 27)}…` : compact;
+}
+
+/**
+ * Produces a source-derived teaching preview while no native compiler artifact
+ * exists. These symbolic instructions deliberately omit addresses and bytes;
+ * Build & Run replaces them with the exact objdump output.
+ */
+export function inferCAssemblyPreview(source: string): readonly AssemblyPreviewInstruction[] {
+  const instructions: AssemblyPreviewInstruction[] = [];
+  let insideFunction = false;
+
+  function emit(instruction: string, sourceLine: number): void {
+    instructions.push({
+      id: `preview-${instructions.length}`,
+      instruction,
+      sourceLine
+    });
+  }
+
+  source.split(/\r?\n/).forEach((rawLine, index) => {
+    const sourceLine = index + 1;
+    const text = rawLine.replace(/\/\/.*$/, "").trim();
+    if (!text || text.startsWith("#") || text === "{" || text === "}") return;
+
+    const functionDefinition = text.match(/^(?:(?:static|inline|constexpr|extern)\s+)*(?:[\w:<>]+\s*[*&]?\s+)+([A-Za-z_]\w*)\s*\([^;]*\)\s*(?:const\s*)?\{/);
+    if (functionDefinition?.[1]) {
+      insideFunction = true;
+      emit("push rbp", sourceLine);
+      emit("mov rbp, rsp", sourceLine);
+      return;
+    }
+
+    const allocation = text.match(/\b(malloc|calloc|realloc)\s*\((.*)\)\s*;/);
+    if (allocation?.[1]) {
+      const argument = compactPreviewOperand(allocation[2] ?? "size");
+      const target = text.match(/\b([A-Za-z_]\w*)\s*=\s*(?:\([^)]*\)\s*)?(?:malloc|calloc|realloc)\b/)?.[1];
+      emit(`mov rdi, ${argument || "size"}`, sourceLine);
+      emit(`call ${allocation[1]}`, sourceLine);
+      if (target) emit(`mov qword ptr [${target}], rax`, sourceLine);
+      return;
+    }
+
+    const free = text.match(/\bfree\s*\(\s*([A-Za-z_]\w*)\s*\)/);
+    if (free?.[1]) {
+      emit(`mov rdi, qword ptr [${free[1]}]`, sourceLine);
+      emit("call free", sourceLine);
+      return;
+    }
+
+    const libraryCall = text.match(/\b(printf|puts|scanf|fprintf|fputs)\s*\(/);
+    if (libraryCall?.[1]) {
+      emit("lea rdi, [rip + .LC0]", sourceLine);
+      if (libraryCall[1] === "printf" || libraryCall[1] === "scanf" || libraryCall[1] === "fprintf") {
+        emit("xor eax, eax", sourceLine);
+      }
+      emit(`call ${libraryCall[1]}`, sourceLine);
+      return;
+    }
+
+    const returnMatch = text.match(/^return(?:\s+(.+?))?\s*;/);
+    if (returnMatch) {
+      emit(`mov eax, ${compactPreviewOperand(returnMatch[1] ?? "0")}`, sourceLine);
+      if (insideFunction) emit("leave", sourceLine);
+      emit("ret", sourceLine);
+      return;
+    }
+
+    const branch = text.match(/^if\s*\((.*)\)/);
+    if (branch?.[1]) {
+      emit(`cmp ${compactPreviewOperand(branch[1])}, 0`, sourceLine);
+      emit("je .Lnext", sourceLine);
+      return;
+    }
+
+    const loop = text.match(/^(?:for|while)\s*\((.*)\)/);
+    if (loop?.[1]) {
+      emit(`cmp ${compactPreviewOperand(loop[1])}, 0`, sourceLine);
+      emit("jne .Lloop", sourceLine);
+      return;
+    }
+
+    const indirectWrite = text.match(/^(?:[A-Za-z_]\w*\s+)*(?:\*\s*)?([A-Za-z_]\w*)\s*->\s*([A-Za-z_]\w*)\s*=\s*([^;]+);/);
+    if (indirectWrite?.[1] && indirectWrite[2]) {
+      emit(`mov dword ptr [${indirectWrite[1]} + ${indirectWrite[2]}], ${compactPreviewOperand(indirectWrite[3] ?? "?")}`, sourceLine);
+      return;
+    }
+
+    const dereferenceWrite = text.match(/^\*\s*([A-Za-z_]\w*)\s*=\s*([^;]+);/);
+    if (dereferenceWrite?.[1]) {
+      emit(`mov dword ptr [${dereferenceWrite[1]}], ${compactPreviewOperand(dereferenceWrite[2] ?? "?")}`, sourceLine);
+      return;
+    }
+
+    const initializedScalar = text.match(/^(?:const\s+)?(?:unsigned\s+|signed\s+)?(?:int|char|short|long|float|double|size_t)\s+([A-Za-z_]\w*)\s*=\s*([^;]+);/);
+    if (initializedScalar?.[1]) {
+      emit(`mov dword ptr [${initializedScalar[1]}], ${compactPreviewOperand(initializedScalar[2] ?? "?")}`, sourceLine);
+      return;
+    }
+
+    const generalCall = text.match(/\b([A-Za-z_]\w*)\s*\(/);
+    if (generalCall?.[1] && !["if", "for", "while", "switch", "sizeof"].includes(generalCall[1])) {
+      emit(`call ${generalCall[1]}`, sourceLine);
+    }
+  });
+
+  return instructions;
 }
 
 export function inferCTrace(source: string): readonly CTraceEvent[] {

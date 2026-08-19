@@ -86,6 +86,46 @@ export const reviewCards: readonly ReviewCardDefinition[] = [
     prompt: "Em dados intercalados position(float2)+color(float3), qual é o papel de stride e offset e o que acontece se stride for 0?",
     answer: "Stride informa quantos bytes separam atributos do mesmo tipo em vertices consecutivos; offset localiza o campo no registro. Stride zero descreve atributos tightly packed e lerá posições/cores erradas para essa struct intercalada.",
     evidence: ["sizeof(Vertex)", "offsetof(field)", "shader location compatível"]
+  },
+  {
+    id: "stack-bound",
+    topic: "Stack buffer bound",
+    track: "Security Research",
+    href: "/learn/security-research/sres-corruption/stack-overflow",
+    prompt: "Por que `char buffer[8]; strcpy(buffer, input);` é um defeito espacial mesmo quando o programa 'só crasha', e o que a versão segura precisa declarar que strcpy esconde?",
+    code: `char buffer[8];\nstrcpy(buffer, input);`,
+    language: "c",
+    answer: "strcpy deriva o comprimento da origem e pode escrever além do objeto. O crash é um sintoma; o invariante quebrado é o bound do destino. A correção faz o destino declarar capacidade, copia no máximo cap-1 bytes e termina com NUL. ASan aponta o primeiro store ilegal; canary/ASLR não restauram o contrato.",
+    evidence: ["capacidade do destino", "primeiro store OOB", "teste de regressão com entrada longa"]
+  },
+  {
+    id: "api-dual-use",
+    topic: "Win32 dual use",
+    track: "Security Research",
+    href: "/learn/security-research/sres-windows/win32-dual-use",
+    prompt: "Por que um import de VirtualAlloc ou CreateFileW não autoriza concluir que um PE é malware, e o que o Mini EDR do laboratório deve correlacionar em vez do nome da API?",
+    answer: "Essas APIs são o contrato do sistema operacional para alocação e arquivos. Software legítimo e amostras sintéticas as compartilham. Detecção no laboratório combina processo, path, destino de rede (loopback) e sequência temporal — nunca uma blacklist ingênua do nome da função.",
+    evidence: ["contrato da API", "alvo/path", "timeline de eventos"]
+  },
+  {
+    id: "player-layout",
+    topic: "Player memory layout",
+    track: "Game Security",
+    href: "/learn/game-security/gsec-memory/player-layout",
+    prompt: "No binário educacional do Arena Lab, por que health não é 'o número 100 na memória' e o que você precisa registrar junto dos offsets +0x00…+0x0C?",
+    code: `struct Player { float x, y, z; int health; int armor; };`,
+    language: "cpp",
+    answer: "Health é um int32 em um offset de uma struct com sizeof e alinhamento definidos nesta compilação. Sem tipo, endian e hash do build, 0x64 pode ser um byte de float. Offsets mudam entre versões; o inspector mede o layout atual do processo do laboratório, nunca de um jogo online de terceiros.",
+    evidence: ["offsetof(health)==12", "sizeof(Player)==20", "hash/versão do binário do lab"]
+  },
+  {
+    id: "naive-ac",
+    topic: "Fictional anti-cheat gap",
+    track: "Game Security",
+    href: "/learn/game-security/gsec-anticheat/fictional-ac",
+    prompt: "O Mini Anti-Cheat naive aceita um teleport com health legal. Qual invariante faltou, e qual é o objetivo do exercício depois de demonstrar o miss?",
+    answer: "O detector naive só olha faixa/heal de health. Deslocamento maior que vmax·dt é a fraqueza proposital. O Bypass Research Lab pede encontrar esse buraco no AC fictício e então ligar o modo strong (sanity de velocidade + correlação de input). Não há exercício contra BattlEye, EAC ou Vanguard.",
+    evidence: ["teleport miss no modo naive", "SpeedHack no modo strong", "WASD legal sem falso positivo"]
   }
 ] as const;
 
